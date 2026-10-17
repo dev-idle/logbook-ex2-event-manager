@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.EventManager.TypeLabel" parent="">
+        <item name="android:background">@drawable/bg_type_label</item>
+        <item name="android:paddingStart">@dimen/type_label_padding_horizontal</item>
+        <item name="android:paddingEnd">@dimen/type_label_padding_horizontal</item>
+        <item name="android:paddingTop">@dimen/type_label_padding_vertical</item>
+        <item name="android:paddingBottom">@dimen/type_label_padding_vertical</item>
+        <item name="android:textAppearance">?attr/textAppearanceLabelMedium</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Widget.EventManager.EventDetail" parent="">
+        <item name="android:drawablePadding">@dimen/space_small</item>
+        <item name="android:drawableTint">?attr/colorOnSurfaceVariant</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+</resources>

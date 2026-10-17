@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="screen_padding">16dp</dimen>
+    <dimen name="space_tiny">2dp</dimen>
+    <dimen name="space_small">8dp</dimen>
+    <dimen name="space_medium">12dp</dimen>
+
+    <dimen name="card_padding">16dp</dimen>
+    <dimen name="card_margin">4dp</dimen>
+    <dimen name="corner_small">8dp</dimen>
+
+    <dimen name="type_label_padding_horizontal">8dp</dimen>
+    <dimen name="type_label_padding_vertical">2dp</dimen>
+</resources>

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import java.util.Locale;
 
 /**
  * Reads and writes event dates in the DD/MM/YYYY format used by the brief.
@@ -18,6 +19,9 @@ public final class EventDates {
     private static final DateTimeFormatter INPUT = DateTimeFormatter.ofPattern("d/M/uuuu")
             .withResolverStyle(ResolverStyle.STRICT);
     private static final DateTimeFormatter OUTPUT = DateTimeFormatter.ofPattern("dd/MM/uuuu");
+    // Day names are in English to match the rest of the app.
+    private static final DateTimeFormatter OUTPUT_WITH_DAY =
+            DateTimeFormatter.ofPattern("EEE, dd/MM/uuuu", Locale.UK);
 
     private EventDates() {
     }
@@ -34,5 +38,10 @@ public final class EventDates {
     /** Formats a date as DD/MM/YYYY, such as "05/03/2026". */
     public static String format(LocalDate date) {
         return date.format(OUTPUT);
+    }
+
+    /** Formats a date with its day of the week, such as "Sat, 24/10/2026". */
+    public static String formatWithDay(LocalDate date) {
+        return date.format(OUTPUT_WITH_DAY);
     }
 }

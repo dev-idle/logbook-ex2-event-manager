@@ -70,4 +70,11 @@
     <color name="md_theme_dark_surfaceContainer">#1D2024</color>
     <color name="md_theme_dark_surfaceContainerHigh">#272A2F</color>
     <color name="md_theme_dark_surfaceContainerHighest">#32353A</color>
+
+    <!-- Event type labels, 7:1 or more against the label text -->
+    <color name="type_conference_container">#DEECFF</color>
+    <color name="type_workshop_container">#D4F3D3</color>
+    <color name="type_seminar_container">#F4E6FF</color>
+    <color name="type_social_container">#FFE6D7</color>
+    <color name="type_other_container">#EBEBEE</color>
 </resources>

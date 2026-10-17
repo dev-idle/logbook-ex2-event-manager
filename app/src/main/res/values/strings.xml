@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">Event Manager</string>
 
+    <string name="empty_title">No events yet</string>
+    <string name="empty_message">Events you add appear here.</string>
+    <plurals name="event_count">
+        <item quantity="one">%d event</item>
+        <item quantity="other">%d events</item>
+    </plurals>
+
     <!-- Event types from the logbook brief -->
     <string name="type_conference">Conference</string>
     <string name="type_workshop">Workshop</string>
