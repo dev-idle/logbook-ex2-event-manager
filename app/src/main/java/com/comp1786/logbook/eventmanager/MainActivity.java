@@ -8,6 +8,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -17,8 +18,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String STATE_EVENTS = "events";
 
     private MaterialToolbar toolbar;
     private RecyclerView eventList;
@@ -54,6 +58,23 @@ public class MainActivity extends AppCompatActivity {
         showEventCount();
 
         findViewById(R.id.add_button).setOnClickListener(v -> openAddEvent());
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(STATE_EVENTS, events.toArray(new Event[0]));
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Event[] saved = savedInstanceState.getSerializable(STATE_EVENTS, Event[].class);
+        if (saved != null) {
+            events.addAll(Arrays.asList(saved));
+            adapter.notifyItemRangeInserted(0, saved.length);
+            showEventCount();
+        }
     }
 
     private void bindViews() {
