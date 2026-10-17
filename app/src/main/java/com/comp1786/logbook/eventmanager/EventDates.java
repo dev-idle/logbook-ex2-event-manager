@@ -10,7 +10,7 @@ import java.time.format.ResolverStyle;
  */
 public final class EventDates {
 
-    /** Earliest and latest dates accepted, to catch typing mistakes such as "0026". */
+    // Earliest and latest dates accepted, to catch typing mistakes such as the year 0026.
     public static final LocalDate MINIMUM = LocalDate.of(1900, 1, 1);
     public static final LocalDate MAXIMUM = LocalDate.of(2100, 12, 31);
 
@@ -22,7 +22,7 @@ public final class EventDates {
     private EventDates() {
     }
 
-    /** Returns the date for text such as "5/3/2026", or null if that day does not exist. */
+    /** Returns the date for text such as "5/3/2026", or null if it is not a real date. */
     public static LocalDate parse(String text) {
         try {
             return LocalDate.parse(text, INPUT);
