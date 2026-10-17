@@ -21,6 +21,11 @@
     <string name="description_navigate_up">Navigate up</string>
     <string name="button_save_event">Save event</string>
 
+    <string name="discard_title">Discard this event?</string>
+    <string name="discard_message">The details you entered will be lost.</string>
+    <string name="button_discard">Discard</string>
+    <string name="button_keep_editing">Keep editing</string>
+
     <!-- Wording follows the GOV.UK Design System error message guidance -->
     <string name="error_name_required">Enter the event name</string>
     <string name="error_name_duplicate">An event with this name already exists on this date</string>

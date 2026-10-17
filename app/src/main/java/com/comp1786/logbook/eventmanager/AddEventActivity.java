@@ -7,14 +7,17 @@ import android.text.TextWatcher;
 import android.widget.EditText;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -34,6 +37,7 @@ public class AddEventActivity extends AppCompatActivity {
     public static final String EXTRA_EVENTS = "events";
 
     private static final String STATE_TYPE = "type";
+    private static final String STATE_DISCARD_SHOWN = "discard_shown";
 
     private MaterialToolbar toolbar;
     private TextInputLayout nameLayout;
@@ -49,6 +53,15 @@ public class AddEventActivity extends AppCompatActivity {
 
     private List<Event> existingEvents;
     private EventType selectedType;
+    private AlertDialog discardDialog;
+
+    // Enabled only once something is entered, so an empty form keeps the system back animation.
+    private final OnBackPressedCallback discardCallback = new OnBackPressedCallback(false) {
+        @Override
+        public void handleOnBackPressed() {
+            showDiscardDialog();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +78,7 @@ public class AddEventActivity extends AppCompatActivity {
         bindViews();
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+        getOnBackPressedDispatcher().addCallback(this, discardCallback);
         Event[] events = getIntent().getSerializableExtra(EXTRA_EVENTS, Event[].class);
         existingEvents = events != null ? Arrays.asList(events) : Collections.emptyList();
         buildTypeMenu();
@@ -83,6 +97,7 @@ public class AddEventActivity extends AppCompatActivity {
         for (TextInputLayout layout : allLayouts()) {
             layout.getEditText().addTextChangedListener(new InputWatcher(layout));
         }
+        discardCallback.setEnabled(hasInput());
     }
 
     @Override
@@ -91,6 +106,8 @@ public class AddEventActivity extends AppCompatActivity {
         if (selectedType != null) {
             outState.putString(STATE_TYPE, selectedType.name());
         }
+        outState.putBoolean(STATE_DISCARD_SHOWN,
+                discardDialog != null && discardDialog.isShowing());
     }
 
     @Override
@@ -100,6 +117,17 @@ public class AddEventActivity extends AppCompatActivity {
         if (type != null) {
             selectedType = EventType.valueOf(type);
         }
+        if (savedInstanceState.getBoolean(STATE_DISCARD_SHOWN)) {
+            showDiscardDialog();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (discardDialog != null) {
+            discardDialog.dismiss();
+        }
+        super.onDestroy();
     }
 
     private void bindViews() {
@@ -139,6 +167,24 @@ public class AddEventActivity extends AppCompatActivity {
         LocalDate date = typed.isValid() ? typed.getValue() : LocalDate.now();
         DatePickerFragment.newInstance(date)
                 .show(getSupportFragmentManager(), DatePickerFragment.REQUEST_KEY);
+    }
+
+    private boolean hasInput() {
+        for (TextInputLayout layout : allLayouts()) {
+            if (!textOf(layout.getEditText()).trim().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void showDiscardDialog() {
+        discardDialog = new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.discard_title)
+                .setMessage(R.string.discard_message)
+                .setNegativeButton(R.string.button_keep_editing, null)
+                .setPositiveButton(R.string.button_discard, (dialog, which) -> finish())
+                .show();
     }
 
     private void save() {
@@ -214,7 +260,7 @@ public class AddEventActivity extends AppCompatActivity {
     }
 
     /** Clears a field's error once the user edits the field. */
-    private static final class InputWatcher implements TextWatcher {
+    private final class InputWatcher implements TextWatcher {
 
         private final TextInputLayout layout;
         private String textBefore = "";
@@ -239,6 +285,7 @@ public class AddEventActivity extends AppCompatActivity {
                 return;
             }
             clearError(layout);
+            discardCallback.setEnabled(hasInput());
         }
     }
 }
