@@ -1,0 +1,38 @@
+package com.comp1786.logbook.eventmanager;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+
+/**
+ * Reads and writes event dates in the DD/MM/YYYY format used by the brief.
+ */
+public final class EventDates {
+
+    /** Earliest and latest dates accepted, to catch typing mistakes such as "0026". */
+    public static final LocalDate MINIMUM = LocalDate.of(1900, 1, 1);
+    public static final LocalDate MAXIMUM = LocalDate.of(2100, 12, 31);
+
+    // STRICT rejects days that do not exist, such as 31/02/2026.
+    private static final DateTimeFormatter INPUT = DateTimeFormatter.ofPattern("d/M/uuuu")
+            .withResolverStyle(ResolverStyle.STRICT);
+    private static final DateTimeFormatter OUTPUT = DateTimeFormatter.ofPattern("dd/MM/uuuu");
+
+    private EventDates() {
+    }
+
+    /** Returns the date for text such as "5/3/2026", or null if that day does not exist. */
+    public static LocalDate parse(String text) {
+        try {
+            return LocalDate.parse(text, INPUT);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
+    }
+
+    /** Formats a date as DD/MM/YYYY, such as "05/03/2026". */
+    public static String format(LocalDate date) {
+        return date.format(OUTPUT);
+    }
+}
