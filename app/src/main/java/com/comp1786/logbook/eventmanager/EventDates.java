@@ -11,7 +11,7 @@ import java.util.Locale;
  */
 public final class EventDates {
 
-    // Earliest and latest dates accepted, to catch typing mistakes such as the year 0026.
+    // The range of Android's DatePicker, which also catches typing mistakes such as 0026.
     public static final LocalDate MINIMUM = LocalDate.of(1900, 1, 1);
     public static final LocalDate MAXIMUM = LocalDate.of(2100, 12, 31);
 

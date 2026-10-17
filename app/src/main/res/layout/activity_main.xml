@@ -24,7 +24,7 @@
             android:paddingStart="@dimen/space_medium"
             android:paddingTop="@dimen/card_margin"
             android:paddingEnd="@dimen/space_medium"
-            android:paddingBottom="@dimen/card_margin"
+            android:paddingBottom="@dimen/list_padding_bottom"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="@integer/event_list_columns"
             tools:listitem="@layout/item_event" />
@@ -56,5 +56,14 @@
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/add_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/screen_padding"
+            android:text="@string/button_add_event"
+            app:icon="@drawable/ic_add" />
     </FrameLayout>
 </LinearLayout>
