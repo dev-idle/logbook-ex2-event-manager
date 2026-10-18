@@ -116,6 +116,8 @@ public class AddEventActivity extends AppCompatActivity {
         String type = savedInstanceState.getString(STATE_TYPE);
         if (type != null) {
             selectedType = EventType.valueOf(type);
+            // Set without filtering, which would leave only this type in the menu.
+            typeInput.setText(getString(selectedType.getLabelRes()), false);
         }
         if (savedInstanceState.getBoolean(STATE_DISCARD_SHOWN)) {
             showDiscardDialog();
@@ -155,7 +157,7 @@ public class AddEventActivity extends AppCompatActivity {
         for (int i = 0; i < types.length; i++) {
             labels[i] = getString(types[i].getLabelRes());
         }
-        // Simple items keep the full list, even when the field already shows a type.
+        // Simple items keep the full list after a type is picked.
         typeInput.setSimpleItems(labels);
         typeInput.setOnItemClickListener((parent, view, position, id) ->
                 selectedType = types[position]);
