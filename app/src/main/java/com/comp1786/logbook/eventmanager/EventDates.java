@@ -21,8 +21,14 @@ public final class EventDates {
             .withResolverStyle(ResolverStyle.STRICT);
     private static final DateTimeFormatter OUTPUT = DateTimeFormatter.ofPattern("dd/MM/uuuu");
     // Day and month names are in English to match the rest of the app.
-    private static final DateTimeFormatter OUTPUT_WITH_DAY =
-            DateTimeFormatter.ofPattern("EEE, dd/MM/uuuu", Locale.UK);
+    private static final DateTimeFormatter SHORT_MONTH =
+            DateTimeFormatter.ofPattern("MMM", Locale.UK);
+    private static final DateTimeFormatter DAY_OF_MONTH =
+            DateTimeFormatter.ofPattern("d", Locale.UK);
+    private static final DateTimeFormatter SHORT_DAY_OF_WEEK =
+            DateTimeFormatter.ofPattern("EEE", Locale.UK);
+    private static final DateTimeFormatter LONG =
+            DateTimeFormatter.ofPattern("EEEE d MMMM uuuu", Locale.UK);
     private static final DateTimeFormatter MONTH =
             DateTimeFormatter.ofPattern("MMMM uuuu", Locale.UK);
 
@@ -43,9 +49,24 @@ public final class EventDates {
         return date.format(OUTPUT);
     }
 
-    /** Formats a date with its day of the week, such as "Sat, 24/10/2026". */
-    public static String formatWithDay(LocalDate date) {
-        return date.format(OUTPUT_WITH_DAY);
+    /** Formats the month of a date, such as "Oct". */
+    public static String formatShortMonth(LocalDate date) {
+        return date.format(SHORT_MONTH);
+    }
+
+    /** Formats the day of the month, such as "24". */
+    public static String formatDayOfMonth(LocalDate date) {
+        return date.format(DAY_OF_MONTH);
+    }
+
+    /** Formats the day of the week, such as "Sat". */
+    public static String formatShortDayOfWeek(LocalDate date) {
+        return date.format(SHORT_DAY_OF_WEEK);
+    }
+
+    /** Formats a date in full, such as "Saturday 24 October 2026". */
+    public static String formatLong(LocalDate date) {
+        return date.format(LONG);
     }
 
     /** Formats a month with its year, such as "October 2026". */

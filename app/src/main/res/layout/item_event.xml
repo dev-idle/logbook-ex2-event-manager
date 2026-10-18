@@ -1,79 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- EventAdapter sets a TicketDrawable as the background. -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Widget.Material3.CardView.Outlined"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/card_margin">
+    android:layout_margin="@dimen/card_margin"
+    android:paddingTop="@dimen/space_medium"
+    android:paddingBottom="@dimen/space_medium"
+    android:screenReaderFocusable="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+    <!-- Screen readers hear the full date, such as "Saturday 24 October 2026". -->
+    <LinearLayout
+        android:id="@+id/date_stub"
+        android:layout_width="@dimen/ticket_stub_width"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/event_month"
+            style="@style/Widget.EventManager.TicketStub.Month"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:importantForAccessibility="no"
+            tools:text="Oct" />
+
+        <TextView
+            android:id="@+id/event_day"
+            style="@style/Widget.EventManager.TicketStub.Day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:importantForAccessibility="no"
+            tools:text="24" />
+
+        <TextView
+            android:id="@+id/event_day_of_week"
+            style="@style/Widget.EventManager.TicketStub.DayOfWeek"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:importantForAccessibility="no"
+            tools:text="Sat" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/event_name"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="@dimen/card_padding">
+        android:layout_marginStart="@dimen/card_padding"
+        android:layout_marginEnd="@dimen/card_padding"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        android:textColor="?attr/colorOnSurface"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/date_stub"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Android Dev Summit" />
 
-        <TextView
-            android:id="@+id/event_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/space_small"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textColor="?attr/colorOnSurface"
-            app:layout_constraintEnd_toStartOf="@id/type_label"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Android Dev Summit" />
+    <TextView
+        android:id="@+id/type_label"
+        style="@style/Widget.EventManager.TypeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_small"
+        app:layout_constraintStart_toStartOf="@id/event_name"
+        app:layout_constraintTop_toBottomOf="@id/event_name"
+        tools:text="@string/type_conference" />
 
-        <TextView
-            android:id="@+id/type_label"
-            style="@style/Widget.EventManager.TypeLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBaseline_toBaselineOf="@id/event_name"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:text="@string/type_conference" />
+    <TextView
+        android:id="@+id/event_location"
+        style="@style/Widget.EventManager.EventDetail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_small"
+        app:drawableStartCompat="@drawable/ic_place"
+        app:layout_constraintEnd_toEndOf="@id/event_name"
+        app:layout_constraintStart_toStartOf="@id/event_name"
+        app:layout_constraintTop_toBottomOf="@id/type_label"
+        tools:text="Greenwich Campus" />
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/header_bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="event_name,type_label" />
-
-        <TextView
-            android:id="@+id/event_date"
-            style="@style/Widget.EventManager.EventDetail"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_small"
-            app:drawableStartCompat="@drawable/ic_event"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header_bottom"
-            tools:text="Sat, 24/10/2026" />
-
-        <TextView
-            android:id="@+id/event_location"
-            style="@style/Widget.EventManager.EventDetail"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_tiny"
-            app:drawableStartCompat="@drawable/ic_place"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/event_date"
-            tools:text="Greenwich Campus" />
-
-        <TextView
-            android:id="@+id/event_organizer"
-            style="@style/Widget.EventManager.EventDetail"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_tiny"
-            app:drawableStartCompat="@drawable/ic_person"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/event_location"
-            tools:text="Google UK" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</com.google.android.material.card.MaterialCardView>
+    <TextView
+        android:id="@+id/event_organizer"
+        style="@style/Widget.EventManager.EventDetail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_tiny"
+        app:drawableStartCompat="@drawable/ic_person"
+        app:layout_constraintEnd_toEndOf="@id/event_name"
+        app:layout_constraintStart_toStartOf="@id/event_name"
+        app:layout_constraintTop_toBottomOf="@id/event_location"
+        tools:text="Google UK" />
+</androidx.constraintlayout.widget.ConstraintLayout>

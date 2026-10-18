@@ -8,9 +8,15 @@
 
     <dimen name="card_padding">16dp</dimen>
     <dimen name="card_margin">4dp</dimen>
-    <!-- Keeps the last card clear of the Add event button: 56dp button plus two 16dp gaps. -->
+    <!-- Keeps the last ticket clear of the Add event button: 56dp button plus two 16dp gaps. -->
     <dimen name="list_padding_bottom">88dp</dimen>
     <dimen name="corner_small">8dp</dimen>
+
+    <dimen name="ticket_stub_width">64dp</dimen>
+    <dimen name="ticket_corner_radius">16dp</dimen>
+    <dimen name="ticket_notch_radius">8dp</dimen>
+    <dimen name="ticket_perforation_width">1dp</dimen>
+    <dimen name="ticket_perforation_dash">4dp</dimen>
 
     <dimen name="type_label_padding_horizontal">8dp</dimen>
     <dimen name="type_label_padding_vertical">2dp</dimen>

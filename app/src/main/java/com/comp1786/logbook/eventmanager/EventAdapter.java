@@ -11,12 +11,15 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.color.MaterialColors;
+
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Shows the events as cards with all five details, under a heading for each month.
+ * Shows the events as tickets with all five details, under a heading for each month.
  */
 public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -71,12 +74,16 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
         EventViewHolder eventHolder = (EventViewHolder) holder;
         Event event = row.event;
+        LocalDate date = event.getDate();
         EventType type = event.getType();
+        eventHolder.dateStub.setContentDescription(EventDates.formatLong(date));
+        eventHolder.monthText.setText(EventDates.formatShortMonth(date));
+        eventHolder.dayText.setText(EventDates.formatDayOfMonth(date));
+        eventHolder.dayOfWeekText.setText(EventDates.formatShortDayOfWeek(date));
         eventHolder.nameText.setText(event.getName());
         eventHolder.typeLabel.setText(type.getLabelRes());
         eventHolder.typeLabel.setBackgroundTintList(ColorStateList.valueOf(
                 holder.itemView.getContext().getColor(type.getContainerColorRes())));
-        eventHolder.dateText.setText(EventDates.formatWithDay(event.getDate()));
         eventHolder.locationText.setText(event.getLocation());
         eventHolder.organizerText.setText(event.getOrganizer());
     }
@@ -160,20 +167,31 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
-    /** The views of one event card. */
+    /** The views of one event ticket. */
     public static final class EventViewHolder extends RecyclerView.ViewHolder {
 
+        private final TicketDrawable ticket;
+        private final View dateStub;
+        private final TextView monthText;
+        private final TextView dayText;
+        private final TextView dayOfWeekText;
         private final TextView nameText;
         private final TextView typeLabel;
-        private final TextView dateText;
         private final TextView locationText;
         private final TextView organizerText;
 
         public EventViewHolder(@NonNull View itemView) {
             super(itemView);
+            ticket = new TicketDrawable(itemView.getContext());
+            ticket.setStubColor(MaterialColors.getColor(itemView,
+                    com.google.android.material.R.attr.colorPrimaryContainer));
+            itemView.setBackground(ticket);
+            dateStub = itemView.findViewById(R.id.date_stub);
+            monthText = itemView.findViewById(R.id.event_month);
+            dayText = itemView.findViewById(R.id.event_day);
+            dayOfWeekText = itemView.findViewById(R.id.event_day_of_week);
             nameText = itemView.findViewById(R.id.event_name);
             typeLabel = itemView.findViewById(R.id.type_label);
-            dateText = itemView.findViewById(R.id.event_date);
             locationText = itemView.findViewById(R.id.event_location);
             organizerText = itemView.findViewById(R.id.event_organizer);
         }

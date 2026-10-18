@@ -22,6 +22,25 @@
         <item name="android:textColor">?attr/colorPrimary</item>
     </style>
 
+    <style name="Widget.EventManager.TicketStub" parent="">
+        <item name="android:textColor">?attr/colorOnPrimaryContainer</item>
+    </style>
+
+    <style name="Widget.EventManager.TicketStub.Month">
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textAppearance">?attr/textAppearanceLabelMedium</item>
+    </style>
+
+    <style name="Widget.EventManager.TicketStub.Day">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAppearance">?attr/textAppearanceHeadlineSmall</item>
+    </style>
+
+    <style name="Widget.EventManager.TicketStub.DayOfWeek">
+        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
+    </style>
+
     <style name="Widget.EventManager.EventDetail" parent="">
         <item name="android:drawablePadding">@dimen/space_small</item>
         <item name="android:drawableTint">?attr/colorOnSurfaceVariant</item>
