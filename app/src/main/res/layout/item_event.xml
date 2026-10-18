@@ -84,14 +84,12 @@
         app:layout_constraintStart_toEndOf="@id/type_label"
         tools:text="In 6 days" />
 
-    <!-- Start and end at either side with the length between, like a boarding pass. -->
-    <LinearLayout
+    <!-- Start and end at either side with the length between, which shortens first. -->
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/time_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/space_medium"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="@id/event_name"
         app:layout_constraintStart_toStartOf="@id/event_name"
         app:layout_constraintTop_toBottomOf="@id/type_label"
@@ -103,35 +101,60 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:importantForAccessibility="no"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="19:00" />
 
         <View
+            android:id="@+id/start_line"
             style="@style/Widget.EventManager.TicketTimeLine"
             android:layout_width="0dp"
             android:layout_height="@dimen/ticket_time_line_height"
-            android:layout_weight="1" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/event_length"
+            app:layout_constraintStart_toEndOf="@id/start_time"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/event_length"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_small"
+            android:layout_marginEnd="@dimen/space_small"
+            android:ellipsize="end"
             android:importantForAccessibility="no"
+            android:maxLines="1"
             android:textAppearance="?attr/textAppearanceLabelSmall"
             android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/end_time"
+            app:layout_constraintStart_toEndOf="@id/start_time"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="4 hr" />
 
         <View
+            android:id="@+id/end_line"
             style="@style/Widget.EventManager.TicketTimeLine"
             android:layout_width="0dp"
             android:layout_height="@dimen/ticket_time_line_height"
-            android:layout_weight="1" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/end_time"
+            app:layout_constraintStart_toEndOf="@id/event_length"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/end_time"
             style="@style/Widget.EventManager.TicketTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/space_tiny"
             android:importantForAccessibility="no"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/next_day"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_goneMarginEnd="0dp"
             tools:text="23:00" />
 
         <!-- Raised beside the end time, like the +1 on a flight that lands the next day. -->
@@ -139,15 +162,15 @@
             android:id="@+id/next_day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:layout_marginStart="@dimen/space_tiny"
             android:importantForAccessibility="no"
             android:text="@string/next_day_marker"
             android:textAppearance="?attr/textAppearanceLabelSmall"
             android:textColor="?attr/colorPrimary"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/end_time"
             tools:visibility="visible" />
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Two lines fit a full address. -->
     <TextView
