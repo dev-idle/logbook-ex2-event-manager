@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
         });
         eventList.setLayoutManager(layoutManager);
         eventList.setAdapter(adapter);
-        showEvents();
 
         // Shrinks to the icon while scrolling down, so it covers less of the list.
         eventList.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -86,6 +85,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         addButton.setOnClickListener(v -> openAddEvent());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Times move on while the app is away, so states and countdowns are worked out again.
+        showEvents();
     }
 
     @Override
@@ -118,11 +124,11 @@ public class MainActivity extends AppCompatActivity {
         addEventLauncher.launch(intent);
     }
 
-    /** Adds an event in date order, after any events on the same day. */
+    /** Adds an event in start order, after any events that start at the same time. */
     private void addEvent(Event event) {
         int position = 0;
         while (position < events.size()
-                && !events.get(position).getDate().isAfter(event.getDate())) {
+                && !events.get(position).getStart().isAfter(event.getStart())) {
             position++;
         }
         events.add(position, event);

@@ -2,6 +2,7 @@ package com.comp1786.logbook.eventmanager;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 /**
@@ -44,6 +45,20 @@ public final class Event implements Serializable {
 
     public LocalTime getEndTime() {
         return endTime;
+    }
+
+    public LocalDateTime getStart() {
+        return date.atTime(startTime);
+    }
+
+    public LocalDateTime getEnd() {
+        LocalDateTime end = date.atTime(endTime);
+        return endsNextDay() ? end.plusDays(1) : end;
+    }
+
+    /** Returns true when the event runs past midnight and ends on the next day. */
+    public boolean endsNextDay() {
+        return !endTime.isAfter(startTime);
     }
 
     public String getLocation() {

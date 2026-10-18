@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.color.MaterialColors;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Shows the events as tickets with all five details, under a heading for each month.
+ * Shows the events as tickets with all their details, under a heading for each month.
  */
 public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -33,9 +34,9 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private List<Row> rows = new ArrayList<>();
 
-    /** Shows the events, which must be in date order. */
+    /** Shows the events, which must be in start order, as they stand at the current time. */
     public void setEvents(List<Event> events) {
-        List<Row> newRows = buildRows(events, LocalDate.now());
+        List<Row> newRows = buildRows(events, LocalDateTime.now());
         DiffUtil.DiffResult diff = DiffUtil.calculateDiff(new RowDiff(rows, newRows));
         rows = newRows;
         diff.dispatchUpdatesTo(this);
@@ -76,7 +77,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (row.event == null) {
             ((MonthViewHolder) holder).monthText.setText(EventDates.formatMonth(row.month));
         } else {
-            bindEvent((EventViewHolder) holder, row.event, row.next);
+            bindEvent((EventViewHolder) holder, row);
         }
     }
 
@@ -85,27 +86,22 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         return rows.size();
     }
 
-    private static void bindEvent(EventViewHolder holder, Event event, boolean next) {
+    private static void bindEvent(EventViewHolder holder, Row row) {
         Context context = holder.itemView.getContext();
+        Event event = row.event;
         LocalDate date = event.getDate();
-        LocalDate today = LocalDate.now();
         EventType type = event.getType();
+        TicketState state = row.state;
 
-        TicketStyle style;
-        if (next) {
-            style = TicketStyle.NEXT;
-        } else if (date.isBefore(today)) {
-            style = TicketStyle.PAST;
-        } else {
-            style = TicketStyle.UPCOMING;
-        }
-        holder.ticket.setStubColor(MaterialColors.getColor(holder.itemView, style.stubColorAttr));
-        int stubTextColor = MaterialColors.getColor(holder.itemView, style.stubTextColorAttr);
+        holder.ticket.setStubColor(MaterialColors.getColor(holder.itemView, state.stubColorAttr));
+        int stubTextColor = MaterialColors.getColor(holder.itemView, state.stubTextColorAttr);
         holder.monthText.setTextColor(stubTextColor);
         holder.dayText.setTextColor(stubTextColor);
         holder.dayOfWeekText.setTextColor(stubTextColor);
         holder.countdownText.setTextColor(
-                MaterialColors.getColor(holder.itemView, style.countdownColorAttr));
+                MaterialColors.getColor(holder.itemView, state.countdownColorAttr));
+        holder.countdownText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                state == TicketState.LIVE ? R.drawable.ic_live : 0, 0, 0, 0);
 
         holder.dateStub.setContentDescription(EventDates.formatLong(date));
         holder.monthText.setText(EventDates.formatShortMonth(date));
@@ -115,16 +111,39 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         holder.typeLabel.setText(type.getLabelRes());
         holder.typeLabel.setBackgroundTintList(
                 ColorStateList.valueOf(context.getColor(type.getContainerColorRes())));
-        holder.countdownText.setText(countdown(context, date, today));
+        holder.countdownText.setText(countdown(context, row));
+        bindTimes(holder, event);
         holder.locationText.setText(event.getLocation());
         holder.organizerText.setText(event.getOrganizer());
     }
 
-    /** Describes the distance from today in whole days, months or years, such as "In 6 days". */
-    private static String countdown(Context context, LocalDate date, LocalDate today) {
-        long days = ChronoUnit.DAYS.between(today, date);
+    /** Shows the start, end and length like a boarding pass, read out as one sentence. */
+    private static void bindTimes(EventViewHolder holder, Event event) {
+        Context context = holder.itemView.getContext();
+        String start = EventTimes.format(event.getStartTime());
+        String end = EventTimes.format(event.getEndTime());
+        String length = EventTimes.formatDuration(
+                context.getResources(), event.getStartTime(), event.getEndTime());
+        holder.startTimeText.setText(start);
+        holder.endTimeText.setText(end);
+        holder.lengthText.setText(length);
+        holder.nextDayText.setVisibility(event.endsNextDay() ? View.VISIBLE : View.GONE);
+        holder.timeRow.setContentDescription(context.getString(event.endsNextDay()
+                ? R.string.description_time_range_next_day : R.string.description_time_range,
+                start, end, length));
+    }
+
+    /** Describes when the event is, such as "Happening now", "In 6 days" or "2 months ago". */
+    private static String countdown(Context context, Row row) {
+        if (row.state == TicketState.LIVE) {
+            return context.getString(R.string.countdown_live);
+        }
+        long days = row.daysAway;
+        LocalDate date = countdownDate(row.event, row.state);
+        LocalDate today = date.minusDays(days);
         if (days == 0) {
-            return context.getString(R.string.countdown_today);
+            return context.getString(row.state == TicketState.PAST
+                    ? R.string.countdown_ended_today : R.string.countdown_today);
         } else if (days == 1) {
             return context.getString(R.string.countdown_tomorrow);
         } else if (days == -1) {
@@ -147,29 +166,56 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 duration);
     }
 
-    /** Adds month headings and marks the events on the first date from today as next. */
-    private static List<Row> buildRows(List<Event> events, LocalDate today) {
+    /** Adds month headings and works out the state of each event at the given time. */
+    private static List<Row> buildRows(List<Event> events, LocalDateTime now) {
+        // Events happening now stand out; when none is, the next ones to start do.
+        boolean anyLive = false;
+        LocalDateTime nextStart = null;
+        for (Event event : events) {
+            TicketState state = stateAt(event, now);
+            if (state == TicketState.LIVE) {
+                anyLive = true;
+            } else if (state == TicketState.UPCOMING && nextStart == null) {
+                nextStart = event.getStart();
+            }
+        }
         List<Row> rows = new ArrayList<>();
         YearMonth month = null;
-        LocalDate nextDate = null;
         for (Event event : events) {
-            LocalDate date = event.getDate();
-            YearMonth eventMonth = YearMonth.from(date);
+            YearMonth eventMonth = YearMonth.from(event.getDate());
             if (!eventMonth.equals(month)) {
                 month = eventMonth;
-                rows.add(new Row(month, null, false));
+                rows.add(new Row(month, null, null, 0));
             }
-            if (nextDate == null && !date.isBefore(today)) {
-                nextDate = date;
+            TicketState state = stateAt(event, now);
+            if (state == TicketState.UPCOMING && !anyLive && event.getStart().equals(nextStart)) {
+                state = TicketState.NEXT;
             }
-            rows.add(new Row(month, event, date.equals(nextDate)));
+            long daysAway =
+                    ChronoUnit.DAYS.between(now.toLocalDate(), countdownDate(event, state));
+            rows.add(new Row(month, event, state, daysAway));
         }
         return rows;
     }
 
-    /** Ticket colors that set the next event apart and gray out past events. */
-    private enum TicketStyle {
+    /** Returns the day a countdown counts to: the end for past events, otherwise the start. */
+    private static LocalDate countdownDate(Event event, TicketState state) {
+        return state == TicketState.PAST ? event.getEnd().toLocalDate() : event.getDate();
+    }
 
+    private static TicketState stateAt(Event event, LocalDateTime now) {
+        if (!event.getEnd().isAfter(now)) {
+            return TicketState.PAST;
+        }
+        return event.getStart().isAfter(now) ? TicketState.UPCOMING : TicketState.LIVE;
+    }
+
+    /** Where an event is in time, with the ticket colors that show it. */
+    private enum TicketState {
+
+        LIVE(androidx.appcompat.R.attr.colorPrimary,
+                com.google.android.material.R.attr.colorOnPrimary,
+                androidx.appcompat.R.attr.colorPrimary),
         NEXT(androidx.appcompat.R.attr.colorPrimary,
                 com.google.android.material.R.attr.colorOnPrimary,
                 androidx.appcompat.R.attr.colorPrimary),
@@ -187,7 +233,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         @AttrRes
         private final int countdownColorAttr;
 
-        TicketStyle(@AttrRes int stubColorAttr, @AttrRes int stubTextColorAttr,
+        TicketState(@AttrRes int stubColorAttr, @AttrRes int stubTextColorAttr,
                 @AttrRes int countdownColorAttr) {
             this.stubColorAttr = stubColorAttr;
             this.stubTextColorAttr = stubTextColorAttr;
@@ -201,12 +247,15 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         private final YearMonth month;
         @Nullable
         private final Event event;
-        private final boolean next;
+        @Nullable
+        private final TicketState state;
+        private final long daysAway;
 
-        Row(YearMonth month, @Nullable Event event, boolean next) {
+        Row(YearMonth month, @Nullable Event event, @Nullable TicketState state, long daysAway) {
             this.month = month;
             this.event = event;
-            this.next = next;
+            this.state = state;
+            this.daysAway = daysAway;
         }
     }
 
@@ -241,8 +290,10 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         @Override
         public boolean areContentsTheSame(int oldPosition, int newPosition) {
-            // An earlier event added later takes over the next-event highlight.
-            return oldRows.get(oldPosition).next == newRows.get(newPosition).next;
+            Row oldRow = oldRows.get(oldPosition);
+            Row newRow = newRows.get(newPosition);
+            // States and countdowns change as time passes and as earlier events are added.
+            return oldRow.state == newRow.state && oldRow.daysAway == newRow.daysAway;
         }
     }
 
@@ -268,6 +319,11 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         private final TextView nameText;
         private final TextView typeLabel;
         private final TextView countdownText;
+        private final View timeRow;
+        private final TextView startTimeText;
+        private final TextView endTimeText;
+        private final TextView lengthText;
+        private final TextView nextDayText;
         private final TextView locationText;
         private final TextView organizerText;
 
@@ -282,6 +338,11 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             nameText = itemView.findViewById(R.id.event_name);
             typeLabel = itemView.findViewById(R.id.type_label);
             countdownText = itemView.findViewById(R.id.event_countdown);
+            timeRow = itemView.findViewById(R.id.time_row);
+            startTimeText = itemView.findViewById(R.id.start_time);
+            endTimeText = itemView.findViewById(R.id.end_time);
+            lengthText = itemView.findViewById(R.id.event_length);
+            nextDayText = itemView.findViewById(R.id.next_day);
             locationText = itemView.findViewById(R.id.event_location);
             organizerText = itemView.findViewById(R.id.event_organizer);
         }

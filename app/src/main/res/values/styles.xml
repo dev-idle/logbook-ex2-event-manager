@@ -80,6 +80,17 @@
         <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
     </style>
 
+    <style name="Widget.EventManager.TicketTime" parent="">
+        <item name="android:textAppearance">?attr/textAppearanceTitleSmall</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Widget.EventManager.TicketTimeLine" parent="">
+        <item name="android:background">?attr/colorOutlineVariant</item>
+        <item name="android:layout_marginStart">@dimen/space_small</item>
+        <item name="android:layout_marginEnd">@dimen/space_small</item>
+    </style>
+
     <style name="Widget.EventManager.EventDetail" parent="">
         <item name="android:drawablePadding">@dimen/space_small</item>
         <item name="android:drawableTint">?attr/colorOnSurfaceVariant</item>
