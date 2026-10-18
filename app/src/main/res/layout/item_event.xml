@@ -70,6 +70,18 @@
         tools:text="@string/type_conference" />
 
     <TextView
+        android:id="@+id/event_countdown"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_small"
+        android:textAppearance="?attr/textAppearanceLabelMedium"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        app:layout_constraintBaseline_toBaselineOf="@id/type_label"
+        app:layout_constraintEnd_toEndOf="@id/event_name"
+        app:layout_constraintStart_toEndOf="@id/type_label"
+        tools:text="In 6 days" />
+
+    <TextView
         android:id="@+id/event_location"
         style="@style/Widget.EventManager.EventDetail"
         android:layout_width="0dp"

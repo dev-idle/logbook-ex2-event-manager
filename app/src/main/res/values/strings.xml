@@ -7,6 +7,23 @@
         <item quantity="one">%d event</item>
         <item quantity="other">%d events</item>
     </plurals>
+    <string name="countdown_today">Today</string>
+    <string name="countdown_tomorrow">Tomorrow</string>
+    <string name="countdown_yesterday">Yesterday</string>
+    <string name="countdown_in">In %1$s</string>
+    <string name="countdown_ago">%1$s ago</string>
+    <plurals name="duration_days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <plurals name="duration_months">
+        <item quantity="one">%d month</item>
+        <item quantity="other">%d months</item>
+    </plurals>
+    <plurals name="duration_years">
+        <item quantity="one">%d year</item>
+        <item quantity="other">%d years</item>
+    </plurals>
     <string name="button_add_event">Add event</string>
     <string name="message_event_added">Event added</string>
 
