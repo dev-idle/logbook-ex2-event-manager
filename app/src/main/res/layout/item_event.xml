@@ -52,6 +52,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/card_padding"
         android:layout_marginEnd="@dimen/card_padding"
+        android:ellipsize="end"
+        android:maxLines="2"
         android:textAppearance="?attr/textAppearanceTitleMedium"
         android:textColor="?attr/colorOnSurface"
         app:layout_constraintEnd_toEndOf="parent"
