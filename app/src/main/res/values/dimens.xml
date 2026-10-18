@@ -11,6 +11,7 @@
     <!-- Keeps the last ticket clear of the Add event button: 56dp button plus two 16dp gaps. -->
     <dimen name="list_padding_bottom">88dp</dimen>
     <dimen name="corner_small">8dp</dimen>
+    <dimen name="button_height">56dp</dimen>
 
     <!-- Medium flexible app bar with a subtitle, from the Material 1.14 tokens. -->
     <dimen name="app_bar_height">136dp</dimen>
