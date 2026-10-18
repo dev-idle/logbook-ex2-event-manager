@@ -257,8 +257,8 @@ public class AddEventActivity extends AppCompatActivity {
         showError(nameLayout, name.isValid() ? null : getString(R.string.error_name_required));
         showError(dateLayout, date.isValid() ? null : dateError(date.getError()));
         showError(startTimeLayout,
-                startTime.isValid() ? null : timeError(startTime.getError(), false));
-        showError(endTimeLayout, endTime.isValid() ? null : timeError(endTime.getError(), true));
+                startTime.isValid() ? null : getString(R.string.error_start_time_required));
+        showError(endTimeLayout, endTime.isValid() ? null : endTimeError(endTime.getError()));
         showError(locationLayout,
                 location.isValid() ? null : getString(R.string.error_location_required));
         showError(organizerLayout,
@@ -297,20 +297,13 @@ public class AddEventActivity extends AppCompatActivity {
         }
     }
 
-    private String timeError(EventValidator.Error error, boolean end) {
+    private String endTimeError(EventValidator.Error error) {
         switch (error) {
-            case WRONG_TIME_FORMAT:
-                return getString(end ? R.string.error_end_time_format
-                        : R.string.error_start_time_format);
-            case NOT_A_REAL_TIME:
-                return getString(end ? R.string.error_end_time_not_real
-                        : R.string.error_start_time_not_real);
             case END_SAME_AS_START:
                 return getString(R.string.error_end_time_same);
             case EMPTY:
             default:
-                return getString(end ? R.string.error_end_time_required
-                        : R.string.error_start_time_required);
+                return getString(R.string.error_end_time_required);
         }
     }
 

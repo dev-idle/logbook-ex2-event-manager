@@ -6,7 +6,6 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,18 +18,15 @@ public final class EventTimes {
     private static final int SLOT_MINUTES = 15;
     private static final int SLOTS_PER_DAY = 24 * 60 / SLOT_MINUTES;
 
-    // STRICT rejects times that do not exist, such as 24:00 or 9:60.
-    private static final DateTimeFormatter INPUT = DateTimeFormatter.ofPattern("H:mm")
-            .withResolverStyle(ResolverStyle.STRICT);
-    private static final DateTimeFormatter OUTPUT = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
     private EventTimes() {
     }
 
-    /** Returns the time for text such as "9:30", or null if it is not a real time. */
+    /** Returns the time for text such as "09:30", or null if the text is not a time. */
     public static LocalTime parse(String text) {
         try {
-            return LocalTime.parse(text, INPUT);
+            return LocalTime.parse(text, FORMAT);
         } catch (DateTimeParseException e) {
             return null;
         }
@@ -38,7 +34,7 @@ public final class EventTimes {
 
     /** Formats a time as HH:MM, such as "09:30". */
     public static String format(LocalTime time) {
-        return time.format(OUTPUT);
+        return time.format(FORMAT);
     }
 
     /** Returns the start times on offer: 00:00, 00:15 and so on to 23:45. */

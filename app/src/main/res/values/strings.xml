@@ -64,11 +64,7 @@
     <string name="error_date_not_real">Event date must be a real date</string>
     <string name="error_date_out_of_range">Event date must be between %1$s and %2$s</string>
     <string name="error_start_time_required">Enter the start time</string>
-    <string name="error_start_time_format">Start time must be in the format HH:MM</string>
-    <string name="error_start_time_not_real">Start time must be a real time</string>
     <string name="error_end_time_required">Enter the end time</string>
-    <string name="error_end_time_format">End time must be in the format HH:MM</string>
-    <string name="error_end_time_not_real">End time must be a real time</string>
     <string name="error_end_time_same">End time must be different from the start time</string>
     <string name="error_location_required">Enter the event location</string>
     <string name="error_organizer_required">Enter the event organizer</string>
