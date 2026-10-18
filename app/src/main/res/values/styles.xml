@@ -10,6 +10,20 @@
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
+    <!-- Medium flexible app bar from the Material 1.14 tokens; Large is deprecated. -->
+    <style name="Widget.EventManager.CollapsingToolbar"
+        parent="Widget.Material3.CollapsingToolbar.Medium">
+        <item name="collapsedSubtitleTextAppearance">?attr/textAppearanceBodyMedium</item>
+        <item name="collapsedSubtitleTextColor">?attr/colorOnSurfaceVariant</item>
+        <item name="expandedSubtitleTextAppearance">?attr/textAppearanceLabelLarge</item>
+        <item name="expandedSubtitleTextColor">?attr/colorOnSurfaceVariant</item>
+        <!-- Below the toolbar row, so the title stays put with or without a subtitle. -->
+        <item name="expandedTitleGravity">top|start</item>
+        <item name="expandedTitleMarginTop">?attr/actionBarSize</item>
+        <item name="expandedTitleSpacing">@dimen/app_bar_title_spacing</item>
+        <item name="expandedTitleTextAppearance">?attr/textAppearanceHeadlineMedium</item>
+    </style>
+
     <style name="Widget.EventManager.MonthHeading" parent="">
         <item name="android:accessibilityHeading">true</item>
         <item name="android:letterSpacing">0.1</item>

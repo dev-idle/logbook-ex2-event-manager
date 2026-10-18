@@ -12,6 +12,10 @@
     <dimen name="list_padding_bottom">88dp</dimen>
     <dimen name="corner_small">8dp</dimen>
 
+    <!-- Medium flexible app bar with a subtitle, from the Material 1.14 tokens. -->
+    <dimen name="app_bar_height">136dp</dimen>
+    <dimen name="app_bar_title_spacing">4dp</dimen>
+
     <dimen name="ticket_stub_width">64dp</dimen>
     <dimen name="ticket_corner_radius">16dp</dimen>
     <dimen name="ticket_notch_radius">8dp</dimen>

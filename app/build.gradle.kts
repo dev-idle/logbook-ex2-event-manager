@@ -36,6 +36,7 @@ dependencies {
     implementation(libs.activity.ktx)
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
+    implementation(libs.coordinatorlayout)
     implementation(libs.material)
     implementation(libs.recyclerview)
     testImplementation(libs.junit)

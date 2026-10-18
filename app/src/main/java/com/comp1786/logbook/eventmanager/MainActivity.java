@@ -16,6 +16,8 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String STATE_EVENTS = "events";
 
     private MaterialToolbar toolbar;
+    private CollapsingToolbarLayout collapsingToolbar;
     private RecyclerView eventList;
     private View emptyView;
 
@@ -48,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars()
                     | WindowInsetsCompat.Type.displayCutout() | WindowInsetsCompat.Type.ime());
-            v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+            // The app bar adds the status bar height itself, so its color fills that area.
+            v.setPadding(bars.left, 0, bars.right, bars.bottom);
             return insets;
         });
 
@@ -89,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void bindViews() {
         toolbar = findViewById(R.id.toolbar);
+        collapsingToolbar = findViewById(R.id.collapsing_toolbar);
         eventList = findViewById(R.id.event_list);
         emptyView = findViewById(R.id.empty_view);
     }
@@ -117,7 +122,15 @@ public class MainActivity extends AppCompatActivity {
         adapter.setEvents(events);
         boolean empty = events.isEmpty();
         emptyView.setVisibility(empty ? View.VISIBLE : View.GONE);
-        toolbar.setSubtitle(empty ? null : getResources().getQuantityString(
+        collapsingToolbar.setSubtitle(empty ? null : getResources().getQuantityString(
                 R.plurals.event_count, events.size(), events.size()));
+        // With no events there is nothing to scroll, so the app bar stays expanded.
+        AppBarLayout.LayoutParams params =
+                (AppBarLayout.LayoutParams) collapsingToolbar.getLayoutParams();
+        int flags = params.getScrollFlags();
+        params.setScrollFlags(empty ? flags & ~AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+                : flags | AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL);
+        // Applies the flags and places the subtitle, which the app bar does only during layout.
+        collapsingToolbar.requestLayout();
     }
 }
