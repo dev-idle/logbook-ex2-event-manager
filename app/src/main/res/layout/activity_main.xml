@@ -5,7 +5,6 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/list_background"
     tools:context=".MainActivity">
 
     <!-- Same color as the list; the id keeps the collapsed state across rotation. -->
