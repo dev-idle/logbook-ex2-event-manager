@@ -40,6 +40,18 @@
         <item name="colorOnContainer">?attr/colorOnPrimary</item>
     </style>
 
+    <!-- Each field keeps a line for its message, so an error does not move the form. -->
+    <style name="Widget.EventManager.TextField"
+        parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="errorEnabled">true</item>
+        <item name="errorIconDrawable">@drawable/ic_error_outline</item>
+    </style>
+
+    <style name="Widget.EventManager.DropdownField"
+        parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="errorEnabled">true</item>
+    </style>
+
     <!-- Medium square button tokens, matching the fields and the Add event button. -->
     <style name="Widget.EventManager.Button" parent="Widget.Material3.Button">
         <item name="android:insetTop">0dp</item>
