@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
@@ -53,9 +54,19 @@ public class MainActivity extends AppCompatActivity {
 
         bindViews();
         setSupportActionBar(toolbar);
-        adapter = new EventAdapter(events);
+        adapter = new EventAdapter();
+        GridLayoutManager layoutManager = new GridLayoutManager(this,
+                getResources().getInteger(R.integer.event_list_columns));
+        // Month headings span every column.
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                return adapter.isMonthHeading(position) ? layoutManager.getSpanCount() : 1;
+            }
+        });
+        eventList.setLayoutManager(layoutManager);
         eventList.setAdapter(adapter);
-        showEventCount();
+        showEvents();
 
         findViewById(R.id.add_button).setOnClickListener(v -> openAddEvent());
     }
@@ -72,8 +83,7 @@ public class MainActivity extends AppCompatActivity {
         Event[] saved = savedInstanceState.getSerializable(STATE_EVENTS, Event[].class);
         if (saved != null) {
             events.addAll(Arrays.asList(saved));
-            adapter.notifyItemRangeInserted(0, saved.length);
-            showEventCount();
+            showEvents();
         }
     }
 
@@ -97,14 +107,14 @@ public class MainActivity extends AppCompatActivity {
             position++;
         }
         events.add(position, event);
-        adapter.notifyItemInserted(position);
-        eventList.scrollToPosition(position);
-        showEventCount();
+        showEvents();
+        eventList.scrollToPosition(adapter.positionOf(event));
         Toast.makeText(this, R.string.message_event_added, Toast.LENGTH_SHORT).show();
     }
 
-    /** Shows the number of events under the title, or the empty state when there are none. */
-    private void showEventCount() {
+    /** Shows the events and their number, or the empty state when there are none. */
+    private void showEvents() {
+        adapter.setEvents(events);
         boolean empty = events.isEmpty();
         emptyView.setVisibility(empty ? View.VISIBLE : View.GONE);
         toolbar.setSubtitle(empty ? null : getResources().getQuantityString(

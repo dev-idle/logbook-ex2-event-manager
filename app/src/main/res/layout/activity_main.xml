@@ -25,9 +25,9 @@
             android:paddingTop="@dimen/card_margin"
             android:paddingEnd="@dimen/space_medium"
             android:paddingBottom="@dimen/list_padding_bottom"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            app:spanCount="@integer/event_list_columns"
-            tools:listitem="@layout/item_event" />
+            tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            tools:listitem="@layout/item_event"
+            tools:spanCount="@integer/event_list_columns" />
 
         <LinearLayout
             android:id="@+id/empty_view"

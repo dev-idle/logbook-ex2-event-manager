@@ -1,6 +1,7 @@
 package com.comp1786.logbook.eventmanager;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
@@ -19,9 +20,11 @@ public final class EventDates {
     private static final DateTimeFormatter INPUT = DateTimeFormatter.ofPattern("d/M/uuuu")
             .withResolverStyle(ResolverStyle.STRICT);
     private static final DateTimeFormatter OUTPUT = DateTimeFormatter.ofPattern("dd/MM/uuuu");
-    // Day names are in English to match the rest of the app.
+    // Day and month names are in English to match the rest of the app.
     private static final DateTimeFormatter OUTPUT_WITH_DAY =
             DateTimeFormatter.ofPattern("EEE, dd/MM/uuuu", Locale.UK);
+    private static final DateTimeFormatter MONTH =
+            DateTimeFormatter.ofPattern("MMMM uuuu", Locale.UK);
 
     private EventDates() {
     }
@@ -43,5 +46,10 @@ public final class EventDates {
     /** Formats a date with its day of the week, such as "Sat, 24/10/2026". */
     public static String formatWithDay(LocalDate date) {
         return date.format(OUTPUT_WITH_DAY);
+    }
+
+    /** Formats a month with its year, such as "October 2026". */
+    public static String formatMonth(YearMonth month) {
+        return month.format(MONTH);
     }
 }

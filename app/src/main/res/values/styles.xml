@@ -10,6 +10,18 @@
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
+    <style name="Widget.EventManager.MonthHeading" parent="">
+        <item name="android:accessibilityHeading">true</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:paddingStart">@dimen/card_margin</item>
+        <item name="android:paddingEnd">@dimen/card_margin</item>
+        <item name="android:paddingTop">@dimen/screen_padding</item>
+        <item name="android:paddingBottom">@dimen/card_margin</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textAppearance">?attr/textAppearanceLabelLarge</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
     <style name="Widget.EventManager.EventDetail" parent="">
         <item name="android:drawablePadding">@dimen/space_small</item>
         <item name="android:drawableTint">?attr/colorOnSurfaceVariant</item>
