@@ -20,6 +20,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
@@ -41,8 +42,9 @@ public class AddEventActivity extends AppCompatActivity {
     private static final String STATE_START_TIME = "start_time";
     private static final String STATE_END_TIME = "end_time";
 
-    // Where the start list opens while no time is chosen.
+    // Where both time lists open while no start time is selected.
     private static final LocalTime DEFAULT_START_TIME = LocalTime.of(6, 0);
+    private static final Duration DEFAULT_LENGTH = Duration.ofHours(1);
 
     private MaterialToolbar toolbar;
     private TextInputLayout nameLayout;
@@ -62,7 +64,7 @@ public class AddEventActivity extends AppCompatActivity {
 
     private List<Event> existingEvents;
     private EventType selectedType;
-    private LocalTime chosenStartTime;
+    private LocalTime selectedStartTime;
     private AlertDialog discardDialog;
 
     // Enabled only once something is entered, so an empty form keeps the system back animation.
@@ -136,8 +138,8 @@ public class AddEventActivity extends AppCompatActivity {
         // The times are set the same way, after the end list is rebuilt for the start.
         String start = savedInstanceState.getString(STATE_START_TIME, "");
         startTimeInput.setText(start, false);
-        chosenStartTime = EventTimes.parse(start);
-        buildEndMenu(chosenStartTime);
+        selectedStartTime = EventTimes.parse(start);
+        buildEndMenu(selectedStartTime);
         endTimeInput.setText(savedInstanceState.getString(STATE_END_TIME, ""), false);
         if (savedInstanceState.getBoolean(STATE_DISCARD_SHOWN)) {
             showDiscardDialog();
@@ -188,9 +190,11 @@ public class AddEventActivity extends AppCompatActivity {
     }
 
     private void buildTimeMenus() {
-        startTimeInput.setSimpleItems(labelsOf(EventTimes.allSlots()));
+        List<LocalTime> startTimes = EventTimes.allSlots();
+        startTimeInput.setSimpleItems(labelsOf(startTimes));
         startTimeInput.setPreferredItem(EventTimes.format(DEFAULT_START_TIME));
-        startTimeInput.setOnItemClickListener((parent, view, position, id) -> pickStartTime());
+        startTimeInput.setOnItemClickListener((parent, view, position, id) ->
+                changeStartTime(startTimes.get(position)));
         buildEndMenu(null);
     }
 
@@ -198,19 +202,18 @@ public class AddEventActivity extends AppCompatActivity {
     private void buildEndMenu(@Nullable LocalTime start) {
         LocalTime from = start != null ? start : DEFAULT_START_TIME;
         endTimeInput.setSimpleItems(labelsOf(EventTimes.slotsAfter(from)));
-        endTimeInput.setPreferredItem(EventTimes.format(from.plusHours(1)));
+        endTimeInput.setPreferredItem(EventTimes.format(from.plus(DEFAULT_LENGTH)));
     }
 
-    /** Moves the end with a newly picked start so the length stays, or sets it an hour later. */
-    private void pickStartTime() {
-        LocalTime start = EventTimes.parse(textOf(startTimeInput));
+    /** Moves the end with a new start so the length stays, or sets it an hour later. */
+    private void changeStartTime(LocalTime start) {
         LocalTime end = EventTimes.parse(textOf(endTimeInput));
-        if (end != null && chosenStartTime != null) {
-            end = start.plusMinutes(EventTimes.minutesBetween(chosenStartTime, end));
+        if (end != null && selectedStartTime != null) {
+            end = start.plusMinutes(EventTimes.minutesBetween(selectedStartTime, end));
         } else if (end == null || end.equals(start)) {
-            end = start.plusHours(1);
+            end = start.plus(DEFAULT_LENGTH);
         }
-        chosenStartTime = start;
+        selectedStartTime = start;
         buildEndMenu(start);
         endTimeInput.setText(EventTimes.format(end), false);
     }
