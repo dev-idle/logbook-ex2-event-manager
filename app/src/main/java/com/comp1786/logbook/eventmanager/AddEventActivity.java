@@ -18,7 +18,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.time.LocalDate;
@@ -59,7 +58,7 @@ public class AddEventActivity extends AppCompatActivity {
     private DropdownField endTimeInput;
     private EditText locationInput;
     private EditText organizerInput;
-    private MaterialAutoCompleteTextView typeInput;
+    private DropdownField typeInput;
 
     private List<Event> existingEvents;
     private EventType selectedType;
