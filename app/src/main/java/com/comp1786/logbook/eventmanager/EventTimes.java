@@ -43,7 +43,7 @@ public final class EventTimes {
         return slotsFrom(LocalTime.MIDNIGHT, SLOTS_PER_DAY);
     }
 
-    /** Returns the end times on offer after a start, going on past midnight to just under a day. */
+    /** Returns the end times on offer, from 15 min to 23 hr 45 min after the start. */
     public static List<LocalTime> slotsAfter(LocalTime start) {
         return slotsFrom(start.plusMinutes(SLOT_MINUTES), SLOTS_PER_DAY - 1);
     }
