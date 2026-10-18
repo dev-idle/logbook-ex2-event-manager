@@ -24,6 +24,22 @@
         <item name="expandedTitleTextAppearance">?attr/textAppearanceHeadlineMedium</item>
     </style>
 
+    <!-- Small extended FAB tokens, colored as in the Material FAB theming guide. -->
+    <style name="Widget.EventManager.AddButton"
+        parent="Widget.Material3.ExtendedFloatingActionButton.Icon.Primary">
+        <!-- The plus sign is inset 5dp in its icon, so 12dp matches the 16dp end visually. -->
+        <item name="android:paddingStart">@dimen/space_medium</item>
+        <item name="android:paddingEnd">@dimen/screen_padding</item>
+        <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
+        <item name="iconPadding">@dimen/space_small</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.EventManager.AddButton</item>
+    </style>
+
+    <style name="ThemeOverlay.EventManager.AddButton" parent="">
+        <item name="colorContainer">?attr/colorPrimary</item>
+        <item name="colorOnContainer">?attr/colorOnPrimary</item>
+    </style>
+
     <style name="Widget.EventManager.MonthHeading" parent="">
         <item name="android:accessibilityHeading">true</item>
         <item name="android:letterSpacing">0.1</item>

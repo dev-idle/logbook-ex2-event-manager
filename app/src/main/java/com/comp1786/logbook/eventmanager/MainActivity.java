@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private CollapsingToolbarLayout collapsingToolbar;
     private RecyclerView eventList;
     private View emptyView;
+    private ExtendedFloatingActionButton addButton;
 
     private final ArrayList<Event> events = new ArrayList<>();
     private EventAdapter adapter;
@@ -72,7 +74,18 @@ public class MainActivity extends AppCompatActivity {
         eventList.setAdapter(adapter);
         showEvents();
 
-        findViewById(R.id.add_button).setOnClickListener(v -> openAddEvent());
+        // Shrinks to the icon while scrolling down, so it covers less of the list.
+        eventList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0) {
+                    addButton.shrink();
+                } else if (dy < 0) {
+                    addButton.extend();
+                }
+            }
+        });
+        addButton.setOnClickListener(v -> openAddEvent());
     }
 
     @Override
@@ -96,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         collapsingToolbar = findViewById(R.id.collapsing_toolbar);
         eventList = findViewById(R.id.event_list);
         emptyView = findViewById(R.id.empty_view);
+        addButton = findViewById(R.id.add_button);
     }
 
     private void openAddEvent() {
