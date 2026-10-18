@@ -30,10 +30,10 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/name_layout"
+                style="@style/Widget.EventManager.TextField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/label_name"
-                app:errorIconDrawable="@drawable/ic_error_outline">
+                android:hint="@string/label_name">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/name_input"
@@ -48,6 +48,7 @@
             <!-- No error icon here, so the calendar button stays visible while an error shows. -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/date_layout"
+                style="@style/Widget.EventManager.TextField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_small"
@@ -79,7 +80,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/start_time_layout"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    style="@style/Widget.EventManager.DropdownField"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -96,7 +97,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/end_time_layout"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    style="@style/Widget.EventManager.DropdownField"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/space_small"
@@ -115,11 +116,11 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/location_layout"
+                style="@style/Widget.EventManager.TextField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_small"
-                android:hint="@string/label_location"
-                app:errorIconDrawable="@drawable/ic_error_outline">
+                android:hint="@string/label_location">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/location_input"
@@ -133,11 +134,11 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/organizer_layout"
+                style="@style/Widget.EventManager.TextField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_small"
-                android:hint="@string/label_organizer"
-                app:errorIconDrawable="@drawable/ic_error_outline">
+                android:hint="@string/label_organizer">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/organizer_input"
@@ -152,7 +153,7 @@
             <!-- AddEventActivity sets the items from EventType and restores the chosen type. -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/type_layout"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                style="@style/Widget.EventManager.DropdownField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_small"

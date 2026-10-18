@@ -40,6 +40,24 @@
         <item name="colorOnContainer">?attr/colorOnPrimary</item>
     </style>
 
+    <!-- The platform date picker takes its accents from attributes Material sets to secondary. -->
+    <style name="ThemeOverlay.EventManager.Picker" parent="ThemeOverlay.Material3.Dialog">
+        <item name="android:colorAccent">?attr/colorPrimary</item>
+        <item name="android:colorControlActivated">?attr/colorPrimary</item>
+    </style>
+
+    <!-- Each field keeps a line for its message, so an error does not move the form. -->
+    <style name="Widget.EventManager.TextField"
+        parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="errorEnabled">true</item>
+        <item name="errorIconDrawable">@drawable/ic_error_outline</item>
+    </style>
+
+    <style name="Widget.EventManager.DropdownField"
+        parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="errorEnabled">true</item>
+    </style>
+
     <!-- Medium square button tokens, matching the fields and the Add event button. -->
     <style name="Widget.EventManager.Button" parent="Widget.Material3.Button">
         <item name="android:insetTop">0dp</item>

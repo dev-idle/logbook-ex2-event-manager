@@ -36,6 +36,9 @@ public class DropdownField extends MaterialAutoCompleteTextView {
         super.showDropDown();
         String target = length() > 0 ? getText().toString() : preferredItem;
         ListAdapter adapter = getAdapter();
+        if (adapter == null) {
+            return;
+        }
         for (int i = 0; i < adapter.getCount(); i++) {
             if (target.equals(String.valueOf(adapter.getItem(i)))) {
                 setListSelection(i);

@@ -257,19 +257,19 @@ public class AddEventActivity extends AppCompatActivity {
                 EventValidator.validateText(textOf(organizerInput));
         EventValidator.Result<EventType> type = EventValidator.validateType(selectedType);
 
-        showError(nameLayout, name.isValid() ? null : getString(R.string.error_name_required));
-        showError(dateLayout, date.isValid() ? null : dateError(date.getError()));
-        showError(startTimeLayout,
+        nameLayout.setError(name.isValid() ? null : getString(R.string.error_name_required));
+        dateLayout.setError(date.isValid() ? null : dateError(date.getError()));
+        startTimeLayout.setError(
                 startTime.isValid() ? null : getString(R.string.error_start_time_required));
-        showError(endTimeLayout, endTime.isValid() ? null : endTimeError(endTime.getError()));
-        showError(locationLayout,
+        endTimeLayout.setError(endTime.isValid() ? null : endTimeError(endTime.getError()));
+        locationLayout.setError(
                 location.isValid() ? null : getString(R.string.error_location_required));
-        showError(organizerLayout,
+        organizerLayout.setError(
                 organizer.isValid() ? null : getString(R.string.error_organizer_required));
-        showError(typeLayout, type.isValid() ? null : getString(R.string.error_type_required));
+        typeLayout.setError(type.isValid() ? null : getString(R.string.error_type_required));
         if (name.isValid() && date.isValid()
                 && EventValidator.isDuplicate(name.getValue(), date.getValue(), existingEvents)) {
-            showError(nameLayout, getString(R.string.error_name_duplicate));
+            nameLayout.setError(getString(R.string.error_name_duplicate));
         }
 
         for (TextInputLayout layout : allLayouts()) {
@@ -317,8 +317,7 @@ public class AddEventActivity extends AppCompatActivity {
         EventValidator.Result<LocalTime> end =
                 EventValidator.validateEndTime(textOf(endTimeInput), start.getValue());
         if (!start.isValid() || !end.isValid()) {
-            // A blank helper still takes its line, so the fields below do not move.
-            endTimeLayout.setHelperText(" ");
+            endTimeLayout.setHelperText(null);
             return;
         }
         String length = EventTimes.formatLength(getResources(), start.getValue(), end.getValue());
@@ -341,20 +340,6 @@ public class AddEventActivity extends AppCompatActivity {
     private static void setTextAtEnd(EditText input, CharSequence text) {
         input.setText(text);
         input.setSelection(input.length());
-    }
-
-    /** Shows the message under the field, or clears the error when it is null. */
-    private static void showError(TextInputLayout layout, @Nullable String message) {
-        if (message == null) {
-            clearError(layout);
-        } else {
-            layout.setError(message);
-        }
-    }
-
-    private static void clearError(TextInputLayout layout) {
-        layout.setError(null);
-        layout.setErrorEnabled(false);
     }
 
     /** Clears a field's error once the user edits it, and updates the event length. */
@@ -382,7 +367,7 @@ public class AddEventActivity extends AppCompatActivity {
             if (s.toString().equals(textBefore)) {
                 return;
             }
-            clearError(layout);
+            layout.setError(null);
             discardCallback.setEnabled(hasInput());
             if (layout == startTimeLayout || layout == endTimeLayout) {
                 showLength();
