@@ -53,8 +53,8 @@ public final class EventTimes {
         return minutes > 0 ? minutes : minutes + 24 * 60;
     }
 
-    /** Formats the time from start to end, such as "4 hr" or "1 hr 30 min". */
-    public static String formatDuration(Resources res, LocalTime start, LocalTime end) {
+    /** Formats the length of an event, such as "45 min", "4 hr" or "1 hr 30 min". */
+    public static String formatLength(Resources res, LocalTime start, LocalTime end) {
         long minutes = minutesBetween(start, end);
         long hours = minutes / 60;
         long rest = minutes % 60;

@@ -108,7 +108,7 @@ public class AddEventActivity extends AppCompatActivity {
         for (TextInputLayout layout : allLayouts()) {
             layout.getEditText().addTextChangedListener(new InputWatcher(layout));
         }
-        showDuration();
+        showLength();
         discardCallback.setEnabled(hasInput());
     }
 
@@ -308,7 +308,7 @@ public class AddEventActivity extends AppCompatActivity {
     }
 
     /** Shows how long the event lasts under the end time once both times are valid. */
-    private void showDuration() {
+    private void showLength() {
         EventValidator.Result<LocalTime> start =
                 EventValidator.validateTime(textOf(startTimeInput));
         EventValidator.Result<LocalTime> end =
@@ -318,7 +318,7 @@ public class AddEventActivity extends AppCompatActivity {
             endTimeLayout.setHelperText(" ");
             return;
         }
-        String length = EventTimes.formatDuration(getResources(), start.getValue(), end.getValue());
+        String length = EventTimes.formatLength(getResources(), start.getValue(), end.getValue());
         endTimeLayout.setHelperText(end.getValue().isAfter(start.getValue())
                 ? length : getString(R.string.end_time_next_day, length));
     }
@@ -382,7 +382,7 @@ public class AddEventActivity extends AppCompatActivity {
             clearError(layout);
             discardCallback.setEnabled(hasInput());
             if (layout == startTimeLayout || layout == endTimeLayout) {
-                showDuration();
+                showLength();
             }
         }
     }

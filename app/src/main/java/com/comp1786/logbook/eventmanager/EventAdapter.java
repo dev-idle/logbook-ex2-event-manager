@@ -122,7 +122,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         Context context = holder.itemView.getContext();
         String start = EventTimes.format(event.getStartTime());
         String end = EventTimes.format(event.getEndTime());
-        String length = EventTimes.formatDuration(
+        String length = EventTimes.formatLength(
                 context.getResources(), event.getStartTime(), event.getEndTime());
         holder.startTimeText.setText(start);
         holder.endTimeText.setText(end);
