@@ -58,7 +58,7 @@ public final class Event implements Serializable {
 
     /** Returns true when the event runs past midnight and ends on the next day. */
     public boolean endsNextDay() {
-        return !endTime.isAfter(startTime);
+        return EventTimes.endsNextDay(startTime, endTime);
     }
 
     public String getLocation() {

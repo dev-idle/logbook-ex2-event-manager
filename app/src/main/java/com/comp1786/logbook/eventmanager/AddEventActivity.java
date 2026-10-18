@@ -319,8 +319,8 @@ public class AddEventActivity extends AppCompatActivity {
             return;
         }
         String length = EventTimes.formatLength(getResources(), start.getValue(), end.getValue());
-        endTimeLayout.setHelperText(end.getValue().isAfter(start.getValue())
-                ? length : getString(R.string.end_time_next_day, length));
+        endTimeLayout.setHelperText(EventTimes.endsNextDay(start.getValue(), end.getValue())
+                ? getString(R.string.end_time_next_day, length) : length);
     }
 
     private static String[] labelsOf(List<LocalTime> times) {

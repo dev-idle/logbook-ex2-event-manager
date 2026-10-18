@@ -14,9 +14,10 @@ import java.util.List;
  */
 public final class EventTimes {
 
+    private static final int MINUTES_PER_DAY = 24 * 60;
     // Times are offered every 15 minutes, so a day has 96 of them.
     private static final int SLOT_MINUTES = 15;
-    private static final int SLOTS_PER_DAY = 24 * 60 / SLOT_MINUTES;
+    private static final int SLOTS_PER_DAY = MINUTES_PER_DAY / SLOT_MINUTES;
 
     private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -47,10 +48,15 @@ public final class EventTimes {
         return slotsFrom(start.plusMinutes(SLOT_MINUTES), SLOTS_PER_DAY - 1);
     }
 
-    /** Returns the minutes from start to end; an end at or before the start is on the next day. */
+    /** Returns true when the end is at or before the start, so it falls on the next day. */
+    public static boolean endsNextDay(LocalTime start, LocalTime end) {
+        return !end.isAfter(start);
+    }
+
+    /** Returns the minutes from start to end, counting an end on the next day. */
     public static long minutesBetween(LocalTime start, LocalTime end) {
         long minutes = Duration.between(start, end).toMinutes();
-        return minutes > 0 ? minutes : minutes + 24 * 60;
+        return endsNextDay(start, end) ? minutes + MINUTES_PER_DAY : minutes;
     }
 
     /** Formats the length of an event, such as "45 min", "4 hr" or "1 hr 30 min". */
