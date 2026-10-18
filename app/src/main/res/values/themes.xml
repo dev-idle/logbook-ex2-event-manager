@@ -36,7 +36,9 @@
         <item name="colorSurfaceContainerHighest">@color/md_theme_light_surfaceContainerHighest</item>
     </style>
 
-    <style name="Theme.EventManager" parent="Base.Theme.EventManager" />
+    <style name="Theme.EventManager" parent="Base.Theme.EventManager">
+        <item name="android:datePickerDialogTheme">@style/ThemeOverlay.EventManager.Picker</item>
+    </style>
 
     <!-- The list screen draws its background once, through the window. -->
     <style name="Theme.EventManager.List">
