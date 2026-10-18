@@ -24,12 +24,19 @@
         <item quantity="one">%d year</item>
         <item quantity="other">%d years</item>
     </plurals>
+    <!-- How long an event lasts, such as "1 hr 30 min" -->
+    <string name="event_length_hours">%1$d hr</string>
+    <string name="event_length_minutes">%1$d min</string>
+    <string name="event_length_hours_minutes">%1$d hr %2$d min</string>
     <string name="button_add_event">Add event</string>
     <string name="message_event_added">Event added</string>
 
     <string name="title_add_event">Add event</string>
     <string name="label_name">Event name</string>
     <string name="label_date">Event date</string>
+    <string name="label_start_time">Start time</string>
+    <string name="label_end_time">End time</string>
+    <string name="end_time_next_day">Next day (%1$s)</string>
     <string name="label_location">Event location</string>
     <string name="label_organizer">Event organizer</string>
     <string name="label_type">Event type</string>
@@ -50,6 +57,13 @@
     <string name="error_date_format">Event date must be in the format DD/MM/YYYY</string>
     <string name="error_date_not_real">Event date must be a real date</string>
     <string name="error_date_out_of_range">Event date must be between %1$s and %2$s</string>
+    <string name="error_start_time_required">Enter the start time</string>
+    <string name="error_start_time_format">Start time must be in the format HH:MM</string>
+    <string name="error_start_time_not_real">Start time must be a real time</string>
+    <string name="error_end_time_required">Enter the end time</string>
+    <string name="error_end_time_format">End time must be in the format HH:MM</string>
+    <string name="error_end_time_not_real">End time must be a real time</string>
+    <string name="error_end_time_same">End time must be different from the start time</string>
     <string name="error_location_required">Enter the event location</string>
     <string name="error_organizer_required">Enter the event organizer</string>
     <string name="error_type_required">Select the event type</string>

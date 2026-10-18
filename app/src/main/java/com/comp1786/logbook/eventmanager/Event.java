@@ -2,6 +2,7 @@ package com.comp1786.logbook.eventmanager;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 /**
  * An event entry. Serializable so it can be passed between activities in an Intent.
@@ -12,13 +13,18 @@ public final class Event implements Serializable {
 
     private final String name;
     private final LocalDate date;
+    private final LocalTime startTime;
+    private final LocalTime endTime;
     private final String location;
     private final String organizer;
     private final EventType type;
 
-    public Event(String name, LocalDate date, String location, String organizer, EventType type) {
+    public Event(String name, LocalDate date, LocalTime startTime, LocalTime endTime,
+            String location, String organizer, EventType type) {
         this.name = name;
         this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.location = location;
         this.organizer = organizer;
         this.type = type;
@@ -30,6 +36,14 @@ public final class Event implements Serializable {
 
     public LocalDate getDate() {
         return date;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
     }
 
     public String getLocation() {

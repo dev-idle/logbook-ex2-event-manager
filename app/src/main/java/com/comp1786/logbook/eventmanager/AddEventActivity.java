@@ -22,6 +22,7 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -38,21 +39,31 @@ public class AddEventActivity extends AppCompatActivity {
 
     private static final String STATE_TYPE = "type";
     private static final String STATE_DISCARD_SHOWN = "discard_shown";
+    private static final String STATE_START_TIME = "start_time";
+    private static final String STATE_END_TIME = "end_time";
+
+    // Where the start list opens while no time is chosen.
+    private static final LocalTime DEFAULT_START_TIME = LocalTime.of(6, 0);
 
     private MaterialToolbar toolbar;
     private TextInputLayout nameLayout;
     private TextInputLayout dateLayout;
+    private TextInputLayout startTimeLayout;
+    private TextInputLayout endTimeLayout;
     private TextInputLayout locationLayout;
     private TextInputLayout organizerLayout;
     private TextInputLayout typeLayout;
     private EditText nameInput;
     private EditText dateInput;
+    private DropdownField startTimeInput;
+    private DropdownField endTimeInput;
     private EditText locationInput;
     private EditText organizerInput;
     private MaterialAutoCompleteTextView typeInput;
 
     private List<Event> existingEvents;
     private EventType selectedType;
+    private LocalTime chosenStartTime;
     private AlertDialog discardDialog;
 
     // Enabled only once something is entered, so an empty form keeps the system back animation.
@@ -82,6 +93,7 @@ public class AddEventActivity extends AppCompatActivity {
         Event[] events = getIntent().getSerializableExtra(EXTRA_EVENTS, Event[].class);
         existingEvents = events != null ? Arrays.asList(events) : Collections.emptyList();
         buildTypeMenu();
+        buildTimeMenus();
 
         dateLayout.setEndIconOnClickListener(v -> showDatePicker());
         getSupportFragmentManager().setFragmentResultListener(DatePickerFragment.REQUEST_KEY,
@@ -97,6 +109,7 @@ public class AddEventActivity extends AppCompatActivity {
         for (TextInputLayout layout : allLayouts()) {
             layout.getEditText().addTextChangedListener(new InputWatcher(layout));
         }
+        showDuration();
         discardCallback.setEnabled(hasInput());
     }
 
@@ -106,6 +119,8 @@ public class AddEventActivity extends AppCompatActivity {
         if (selectedType != null) {
             outState.putString(STATE_TYPE, selectedType.name());
         }
+        outState.putString(STATE_START_TIME, textOf(startTimeInput));
+        outState.putString(STATE_END_TIME, textOf(endTimeInput));
         outState.putBoolean(STATE_DISCARD_SHOWN,
                 discardDialog != null && discardDialog.isShowing());
     }
@@ -119,6 +134,12 @@ public class AddEventActivity extends AppCompatActivity {
             // Set without filtering, which would leave only this type in the menu.
             typeInput.setText(getString(selectedType.getLabelRes()), false);
         }
+        // The times are set the same way, after the end list is rebuilt for the start.
+        String start = savedInstanceState.getString(STATE_START_TIME, "");
+        startTimeInput.setText(start, false);
+        chosenStartTime = EventTimes.parse(start);
+        buildEndMenu(chosenStartTime);
+        endTimeInput.setText(savedInstanceState.getString(STATE_END_TIME, ""), false);
         if (savedInstanceState.getBoolean(STATE_DISCARD_SHOWN)) {
             showDiscardDialog();
         }
@@ -136,19 +157,23 @@ public class AddEventActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         nameLayout = findViewById(R.id.name_layout);
         dateLayout = findViewById(R.id.date_layout);
+        startTimeLayout = findViewById(R.id.start_time_layout);
+        endTimeLayout = findViewById(R.id.end_time_layout);
         locationLayout = findViewById(R.id.location_layout);
         organizerLayout = findViewById(R.id.organizer_layout);
         typeLayout = findViewById(R.id.type_layout);
         nameInput = findViewById(R.id.name_input);
         dateInput = findViewById(R.id.date_input);
+        startTimeInput = findViewById(R.id.start_time_input);
+        endTimeInput = findViewById(R.id.end_time_input);
         locationInput = findViewById(R.id.location_input);
         organizerInput = findViewById(R.id.organizer_input);
         typeInput = findViewById(R.id.type_input);
     }
 
     private TextInputLayout[] allLayouts() {
-        return new TextInputLayout[] {
-                nameLayout, dateLayout, locationLayout, organizerLayout, typeLayout};
+        return new TextInputLayout[] {nameLayout, dateLayout, startTimeLayout, endTimeLayout,
+                locationLayout, organizerLayout, typeLayout};
     }
 
     private void buildTypeMenu() {
@@ -161,6 +186,34 @@ public class AddEventActivity extends AppCompatActivity {
         typeInput.setSimpleItems(labels);
         typeInput.setOnItemClickListener((parent, view, position, id) ->
                 selectedType = types[position]);
+    }
+
+    private void buildTimeMenus() {
+        startTimeInput.setSimpleItems(labelsOf(EventTimes.allSlots()));
+        startTimeInput.setPreferredItem(EventTimes.format(DEFAULT_START_TIME));
+        startTimeInput.setOnItemClickListener((parent, view, position, id) -> pickStartTime());
+        buildEndMenu(null);
+    }
+
+    /** Offers end times after the start, running past midnight, and opens an hour after it. */
+    private void buildEndMenu(@Nullable LocalTime start) {
+        LocalTime from = start != null ? start : DEFAULT_START_TIME;
+        endTimeInput.setSimpleItems(labelsOf(EventTimes.slotsAfter(from)));
+        endTimeInput.setPreferredItem(EventTimes.format(from.plusHours(1)));
+    }
+
+    /** Moves the end with a newly picked start so the length stays, or sets it an hour later. */
+    private void pickStartTime() {
+        LocalTime start = EventTimes.parse(textOf(startTimeInput));
+        LocalTime end = EventTimes.parse(textOf(endTimeInput));
+        if (end != null && chosenStartTime != null) {
+            end = start.plusMinutes(EventTimes.minutesBetween(chosenStartTime, end));
+        } else if (end == null || end.equals(start)) {
+            end = start.plusHours(1);
+        }
+        chosenStartTime = start;
+        buildEndMenu(start);
+        endTimeInput.setText(EventTimes.format(end), false);
     }
 
     /** Opens the picker on the date typed so far, or on today if there is none. */
@@ -192,6 +245,10 @@ public class AddEventActivity extends AppCompatActivity {
     private void save() {
         EventValidator.Result<String> name = EventValidator.validateText(textOf(nameInput));
         EventValidator.Result<LocalDate> date = EventValidator.validateDate(textOf(dateInput));
+        EventValidator.Result<LocalTime> startTime =
+                EventValidator.validateTime(textOf(startTimeInput));
+        EventValidator.Result<LocalTime> endTime =
+                EventValidator.validateEndTime(textOf(endTimeInput), startTime.getValue());
         EventValidator.Result<String> location =
                 EventValidator.validateText(textOf(locationInput));
         EventValidator.Result<String> organizer =
@@ -200,6 +257,9 @@ public class AddEventActivity extends AppCompatActivity {
 
         showError(nameLayout, name.isValid() ? null : getString(R.string.error_name_required));
         showError(dateLayout, date.isValid() ? null : dateError(date.getError()));
+        showError(startTimeLayout,
+                startTime.isValid() ? null : timeError(startTime.getError(), false));
+        showError(endTimeLayout, endTime.isValid() ? null : timeError(endTime.getError(), true));
         showError(locationLayout,
                 location.isValid() ? null : getString(R.string.error_location_required));
         showError(organizerLayout,
@@ -216,8 +276,8 @@ public class AddEventActivity extends AppCompatActivity {
                 return;
             }
         }
-        Event event = new Event(name.getValue(), date.getValue(), location.getValue(),
-                organizer.getValue(), type.getValue());
+        Event event = new Event(name.getValue(), date.getValue(), startTime.getValue(),
+                endTime.getValue(), location.getValue(), organizer.getValue(), type.getValue());
         setResult(RESULT_OK, new Intent().putExtra(EXTRA_EVENT, event));
         finish();
     }
@@ -236,6 +296,47 @@ public class AddEventActivity extends AppCompatActivity {
             default:
                 return getString(R.string.error_date_required);
         }
+    }
+
+    private String timeError(EventValidator.Error error, boolean end) {
+        switch (error) {
+            case WRONG_TIME_FORMAT:
+                return getString(end ? R.string.error_end_time_format
+                        : R.string.error_start_time_format);
+            case NOT_A_REAL_TIME:
+                return getString(end ? R.string.error_end_time_not_real
+                        : R.string.error_start_time_not_real);
+            case END_SAME_AS_START:
+                return getString(R.string.error_end_time_same);
+            case EMPTY:
+            default:
+                return getString(end ? R.string.error_end_time_required
+                        : R.string.error_start_time_required);
+        }
+    }
+
+    /** Shows how long the event lasts under the end time once both times are valid. */
+    private void showDuration() {
+        EventValidator.Result<LocalTime> start =
+                EventValidator.validateTime(textOf(startTimeInput));
+        EventValidator.Result<LocalTime> end =
+                EventValidator.validateEndTime(textOf(endTimeInput), start.getValue());
+        if (!start.isValid() || !end.isValid()) {
+            // A blank helper still takes its line, so the fields below do not move.
+            endTimeLayout.setHelperText(" ");
+            return;
+        }
+        String length = EventTimes.formatDuration(getResources(), start.getValue(), end.getValue());
+        endTimeLayout.setHelperText(end.getValue().isAfter(start.getValue())
+                ? length : getString(R.string.end_time_next_day, length));
+    }
+
+    private static String[] labelsOf(List<LocalTime> times) {
+        String[] labels = new String[times.size()];
+        for (int i = 0; i < labels.length; i++) {
+            labels[i] = EventTimes.format(times.get(i));
+        }
+        return labels;
     }
 
     private static String textOf(EditText input) {
@@ -261,7 +362,7 @@ public class AddEventActivity extends AppCompatActivity {
         layout.setErrorEnabled(false);
     }
 
-    /** Clears a field's error once the user edits the field. */
+    /** Clears a field's error once the user edits it, and updates the event length. */
     private final class InputWatcher implements TextWatcher {
 
         private final TextInputLayout layout;
@@ -288,6 +389,9 @@ public class AddEventActivity extends AppCompatActivity {
             }
             clearError(layout);
             discardCallback.setEnabled(hasInput());
+            if (layout == startTimeLayout || layout == endTimeLayout) {
+                showDuration();
+            }
         }
     }
 }

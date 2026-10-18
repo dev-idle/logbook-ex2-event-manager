@@ -1,0 +1,81 @@
+package com.comp1786.logbook.eventmanager;
+
+import android.content.res.Resources;
+
+import java.time.Duration;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Reads and writes event times in the 24-hour HH:MM format.
+ */
+public final class EventTimes {
+
+    // Times are offered every 15 minutes, so a day has 96 of them.
+    private static final int SLOT_MINUTES = 15;
+    private static final int SLOTS_PER_DAY = 24 * 60 / SLOT_MINUTES;
+
+    // STRICT rejects times that do not exist, such as 24:00 or 9:60.
+    private static final DateTimeFormatter INPUT = DateTimeFormatter.ofPattern("H:mm")
+            .withResolverStyle(ResolverStyle.STRICT);
+    private static final DateTimeFormatter OUTPUT = DateTimeFormatter.ofPattern("HH:mm");
+
+    private EventTimes() {
+    }
+
+    /** Returns the time for text such as "9:30", or null if it is not a real time. */
+    public static LocalTime parse(String text) {
+        try {
+            return LocalTime.parse(text, INPUT);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
+    }
+
+    /** Formats a time as HH:MM, such as "09:30". */
+    public static String format(LocalTime time) {
+        return time.format(OUTPUT);
+    }
+
+    /** Returns the start times on offer: 00:00, 00:15 and so on to 23:45. */
+    public static List<LocalTime> allSlots() {
+        return slotsFrom(LocalTime.MIDNIGHT, SLOTS_PER_DAY);
+    }
+
+    /** Returns the end times on offer after a start, going on past midnight to just under a day. */
+    public static List<LocalTime> slotsAfter(LocalTime start) {
+        return slotsFrom(start.plusMinutes(SLOT_MINUTES), SLOTS_PER_DAY - 1);
+    }
+
+    /** Returns the minutes from start to end; an end at or before the start is on the next day. */
+    public static long minutesBetween(LocalTime start, LocalTime end) {
+        long minutes = Duration.between(start, end).toMinutes();
+        return minutes > 0 ? minutes : minutes + 24 * 60;
+    }
+
+    /** Formats the time from start to end, such as "4 hr" or "1 hr 30 min". */
+    public static String formatDuration(Resources res, LocalTime start, LocalTime end) {
+        long minutes = minutesBetween(start, end);
+        long hours = minutes / 60;
+        long rest = minutes % 60;
+        if (hours == 0) {
+            return res.getString(R.string.event_length_minutes, rest);
+        } else if (rest == 0) {
+            return res.getString(R.string.event_length_hours, hours);
+        }
+        return res.getString(R.string.event_length_hours_minutes, hours, rest);
+    }
+
+    private static List<LocalTime> slotsFrom(LocalTime first, int count) {
+        List<LocalTime> slots = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            // LocalTime wraps at midnight, so the list can run into the next day.
+            slots.add(first.plusMinutes((long) i * SLOT_MINUTES));
+        }
+        return slots;
+    }
+}

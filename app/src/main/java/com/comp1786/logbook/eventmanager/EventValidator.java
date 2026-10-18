@@ -1,6 +1,7 @@
 package com.comp1786.logbook.eventmanager;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -11,11 +12,14 @@ public final class EventValidator {
 
     /** Reasons an input is rejected. */
     public enum Error {
-        EMPTY, WRONG_DATE_FORMAT, NOT_A_REAL_DATE, DATE_OUT_OF_RANGE
+        EMPTY, WRONG_DATE_FORMAT, NOT_A_REAL_DATE, DATE_OUT_OF_RANGE,
+        WRONG_TIME_FORMAT, NOT_A_REAL_TIME, END_SAME_AS_START
     }
 
     // One or two digits for the day and month and four for the year, such as "5/3/2026".
     private static final Pattern DATE = Pattern.compile("\\d{1,2}/\\d{1,2}/\\d{4}");
+    // One or two digits for the hour and two for the minutes, such as "9:30".
+    private static final Pattern TIME = Pattern.compile("\\d{1,2}:\\d{2}");
 
     private EventValidator() {
     }
@@ -43,6 +47,28 @@ public final class EventValidator {
             return Result.invalid(Error.DATE_OUT_OF_RANGE);
         }
         return Result.valid(date);
+    }
+
+    /** Validates a time typed as HH:MM. */
+    public static Result<LocalTime> validateTime(String text) {
+        String value = text.trim();
+        if (value.isEmpty()) {
+            return Result.invalid(Error.EMPTY);
+        }
+        if (!TIME.matcher(value).matches()) {
+            return Result.invalid(Error.WRONG_TIME_FORMAT);
+        }
+        LocalTime time = EventTimes.parse(value);
+        return time == null ? Result.invalid(Error.NOT_A_REAL_TIME) : Result.valid(time);
+    }
+
+    /** Validates an end time, which may be on the next day but must differ from the start. */
+    public static Result<LocalTime> validateEndTime(String text, LocalTime start) {
+        Result<LocalTime> end = validateTime(text);
+        if (end.isValid() && end.getValue().equals(start)) {
+            return Result.invalid(Error.END_SAME_AS_START);
+        }
+        return end;
     }
 
     /** Validates the type chosen from the list, which is null until the user picks one. */
