@@ -11,9 +11,7 @@ import androidx.fragment.app.DialogFragment;
 import java.time.LocalDate;
 
 /**
- * Hosts a DatePickerDialog, as in the module guide, and returns the chosen date as a
- * fragment result. The date is passed in arguments rather than a constructor, because
- * Android recreates fragments with their no-argument constructor, for example on rotation.
+ * Hosts the module guide's DatePickerDialog and returns the chosen date as a fragment result.
  */
 public class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
@@ -25,6 +23,7 @@ public class DatePickerFragment extends DialogFragment
 
     /** Creates a picker that opens on the given date. */
     public static DatePickerFragment newInstance(LocalDate date) {
+        // Arguments, unlike constructor parameters, survive when Android recreates the fragment.
         Bundle args = new Bundle();
         args.putSerializable(ARG_DATE, date);
         DatePickerFragment fragment = new DatePickerFragment();
