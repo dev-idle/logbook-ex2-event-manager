@@ -2,18 +2,23 @@ package com.comp1786.logbook.eventmanager;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.widget.TextView;
 
 import androidx.annotation.AttrRes;
+import androidx.annotation.Nullable;
+
+import com.google.android.material.color.MaterialColors;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 /**
  * Where an event is in time, with the colors and countdown that show it.
  */
-public enum TicketState {
+public enum EventCardState {
 
     LIVE(androidx.appcompat.R.attr.colorPrimary,
             com.google.android.material.R.attr.colorOnPrimary,
@@ -29,40 +34,54 @@ public enum TicketState {
             com.google.android.material.R.attr.colorOnSurfaceVariant);
 
     @AttrRes
-    private final int stubColorAttr;
+    private final int datePanelColorAttr;
     @AttrRes
-    private final int stubTextColorAttr;
+    private final int datePanelTextColorAttr;
     @AttrRes
     private final int countdownColorAttr;
 
-    TicketState(@AttrRes int stubColorAttr, @AttrRes int stubTextColorAttr,
+    EventCardState(@AttrRes int datePanelColorAttr, @AttrRes int datePanelTextColorAttr,
             @AttrRes int countdownColorAttr) {
-        this.stubColorAttr = stubColorAttr;
-        this.stubTextColorAttr = stubTextColorAttr;
+        this.datePanelColorAttr = datePanelColorAttr;
+        this.datePanelTextColorAttr = datePanelTextColorAttr;
         this.countdownColorAttr = countdownColorAttr;
     }
 
     @AttrRes
-    public int getStubColorAttr() {
-        return stubColorAttr;
+    public int getDatePanelColorAttr() {
+        return datePanelColorAttr;
     }
 
     @AttrRes
-    public int getStubTextColorAttr() {
-        return stubTextColorAttr;
+    public int getDatePanelTextColorAttr() {
+        return datePanelTextColorAttr;
     }
 
-    @AttrRes
-    public int getCountdownColorAttr() {
-        return countdownColorAttr;
+    /** Returns when the next events start, or null while one is happening or none is ahead. */
+    @Nullable
+    public static LocalDateTime nextStart(List<Event> events, LocalDateTime now) {
+        LocalDateTime nextStart = null;
+        for (Event event : events) {
+            EventCardState state = at(event, now, null);
+            if (state == LIVE) {
+                return null;
+            } else if (state == UPCOMING
+                    && (nextStart == null || event.getStart().isBefore(nextStart))) {
+                nextStart = event.getStart();
+            }
+        }
+        return nextStart;
     }
 
-    /** Returns the state at the given time. EventAdapter marks the next events itself. */
-    public static TicketState at(Event event, LocalDateTime now) {
+    /** Returns the state of an event at the given time, given when the next events start. */
+    public static EventCardState at(Event event, LocalDateTime now,
+            @Nullable LocalDateTime nextStart) {
         if (!event.getEnd().isAfter(now)) {
             return PAST;
+        } else if (!event.getStart().isAfter(now)) {
+            return LIVE;
         }
-        return event.getStart().isAfter(now) ? UPCOMING : LIVE;
+        return event.getStart().equals(nextStart) ? NEXT : UPCOMING;
     }
 
     /** Returns the days from today to the day the countdown counts to, negative once past. */
@@ -70,8 +89,16 @@ public enum TicketState {
         return ChronoUnit.DAYS.between(today, countdownDate(event));
     }
 
+    /** Shows the countdown in its color, with a dot while the event is happening. */
+    public void showCountdown(TextView countdownView, Event event, long daysAway) {
+        countdownView.setText(countdown(countdownView.getContext(), event, daysAway));
+        countdownView.setTextColor(MaterialColors.getColor(countdownView, countdownColorAttr));
+        countdownView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                this == LIVE ? R.drawable.ic_live : 0, 0, 0, 0);
+    }
+
     /** Describes when the event is, such as "Happening now", "In 6 days" or "2 months ago". */
-    public String countdown(Context context, Event event, long daysAway) {
+    private String countdown(Context context, Event event, long daysAway) {
         if (this == LIVE) {
             return context.getString(R.string.countdown_live);
         }

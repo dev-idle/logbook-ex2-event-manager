@@ -24,6 +24,9 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * Lists the events added while the app is open, as cards under month headings.
+ */
 public class MainActivity extends AppCompatActivity {
 
     private static final String STATE_EVENTS = "events";
@@ -36,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
 
     private final ArrayList<Event> events = new ArrayList<>();
     private EventAdapter adapter;
+    // Set while another screen opens, so a quick second tap does not open it twice.
+    private boolean opening;
 
     private final ActivityResultLauncher<Intent> addEventLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -90,7 +95,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // Times move on while the app is away, so states and countdowns are worked out again.
+        opening = false;
+        // States and countdowns depend on the current time, so they are worked out on each start.
         showEvents();
     }
 
@@ -119,16 +125,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openAddEvent() {
+        if (opening) {
+            return;
+        }
+        opening = true;
         Intent intent = new Intent(MainActivity.this, AddEventActivity.class);
         intent.putExtra(AddEventActivity.EXTRA_EVENTS, events.toArray(new Event[0]));
         addEventLauncher.launch(intent);
     }
 
-    /** Opens an event in full, with its ticket state so the countdown keeps its color. */
-    private void openEventDetails(Event event, TicketState state) {
+    /** Opens an event in full, with the other events so its countdown matches the card. */
+    private void openEventDetails(Event event) {
+        if (opening) {
+            return;
+        }
+        opening = true;
         startActivity(new Intent(MainActivity.this, EventDetailsActivity.class)
                 .putExtra(EventDetailsActivity.EXTRA_EVENT, event)
-                .putExtra(EventDetailsActivity.EXTRA_STATE, state));
+                .putExtra(EventDetailsActivity.EXTRA_EVENTS, events.toArray(new Event[0])));
     }
 
     /** Adds an event in start order, after any events that start at the same time. */

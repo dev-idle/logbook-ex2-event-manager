@@ -40,6 +40,22 @@
         <item name="colorOnContainer">?attr/colorOnPrimary</item>
     </style>
 
+    <!-- Confirming buttons that lose data, such as Discard, are red. -->
+    <style name="ThemeOverlay.EventManager.DestructiveDialog"
+        parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.EventManager.DestructiveButton</item>
+    </style>
+
+    <style name="Widget.EventManager.DestructiveButton"
+        parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.EventManager.DestructiveButton</item>
+    </style>
+
+    <style name="ThemeOverlay.EventManager.DestructiveButton"
+        parent="ThemeOverlay.Material3.Button.TextButton">
+        <item name="colorOnContainer">?attr/colorError</item>
+    </style>
+
     <!-- The platform date picker takes its accents from attributes Material sets to secondary. -->
     <style name="ThemeOverlay.EventManager.Picker" parent="ThemeOverlay.Material3.Dialog">
         <item name="android:colorAccent">?attr/colorPrimary</item>
@@ -79,39 +95,39 @@
         <item name="android:textColor">?attr/colorPrimary</item>
     </style>
 
-    <style name="Widget.EventManager.TicketStub" parent="">
+    <style name="Widget.EventManager.DatePanel" parent="">
         <item name="android:textColor">?attr/colorOnPrimaryContainer</item>
     </style>
 
-    <style name="Widget.EventManager.TicketStub.Month">
+    <style name="Widget.EventManager.DatePanel.Month">
         <item name="android:letterSpacing">0.1</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textAppearance">?attr/textAppearanceLabelMedium</item>
     </style>
 
-    <style name="Widget.EventManager.TicketStub.Day">
+    <style name="Widget.EventManager.DatePanel.Day">
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textAppearance">?attr/textAppearanceHeadlineSmall</item>
     </style>
 
-    <style name="Widget.EventManager.TicketStub.DayOfWeek">
+    <style name="Widget.EventManager.DatePanel.DayOfWeek">
         <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
     </style>
 
-    <style name="Widget.EventManager.TicketTime" parent="">
+    <style name="Widget.EventManager.CardTime" parent="">
         <item name="android:textAppearance">?attr/textAppearanceTitleSmall</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
-    <style name="Widget.EventManager.TicketTimeLine" parent="">
+    <style name="Widget.EventManager.CardTimeLine" parent="">
         <item name="android:background">?attr/colorOutlineVariant</item>
         <item name="android:layout_marginStart">@dimen/space_small</item>
         <item name="android:layout_marginEnd">@dimen/space_small</item>
     </style>
 
-    <style name="Widget.EventManager.EventDetail" parent="">
+    <style name="Widget.EventManager.CardDetail" parent="">
         <item name="android:drawablePadding">@dimen/space_small</item>
-        <item name="android:drawableTint">?attr/colorOnSurfaceVariant</item>
+        <item name="drawableTint">?attr/colorOnSurfaceVariant</item>
         <item name="android:ellipsize">end</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:maxLines">1</item>
@@ -125,12 +141,18 @@
         <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
     </style>
 
+    <!-- The day of the month, colored like the date panel of the card. -->
+    <style name="Widget.EventManager.DetailDay" parent="">
+        <item name="android:textAppearance">?attr/textAppearanceDisplayMedium</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
     <style name="Widget.EventManager.DetailTime" parent="">
         <item name="android:textAppearance">?attr/textAppearanceHeadlineSmall</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
-    <style name="Widget.EventManager.DetailDate" parent="">
+    <style name="Widget.EventManager.DetailSupporting" parent="">
         <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
         <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
     </style>

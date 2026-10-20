@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Shows the events as tickets with all their details, under a heading for each month.
+ * Shows the events as cards with all their details, under a heading for each month.
  */
 public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -77,8 +77,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         holder.itemView.setOnClickListener(v -> {
             int position = holder.getBindingAdapterPosition();
             if (position != RecyclerView.NO_POSITION) {
-                Row row = rows.get(position);
-                listener.onEventClick(row.event, row.state);
+                listener.onEventClick(rows.get(position).event);
             }
         });
         return holder;
@@ -104,20 +103,17 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         Event event = row.event;
         LocalDate date = event.getDate();
         EventType type = event.getType();
-        TicketState state = row.state;
+        EventCardState state = row.state;
 
-        holder.ticket.setStubColor(
-                MaterialColors.getColor(holder.itemView, state.getStubColorAttr()));
-        int stubTextColor = MaterialColors.getColor(holder.itemView, state.getStubTextColorAttr());
-        holder.monthText.setTextColor(stubTextColor);
-        holder.dayText.setTextColor(stubTextColor);
-        holder.dayOfWeekText.setTextColor(stubTextColor);
-        holder.countdownText.setTextColor(
-                MaterialColors.getColor(holder.itemView, state.getCountdownColorAttr()));
-        holder.countdownText.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                state == TicketState.LIVE ? R.drawable.ic_live : 0, 0, 0, 0);
+        holder.card.setDatePanelColor(
+                MaterialColors.getColor(holder.itemView, state.getDatePanelColorAttr()));
+        int datePanelTextColor =
+                MaterialColors.getColor(holder.itemView, state.getDatePanelTextColorAttr());
+        holder.monthText.setTextColor(datePanelTextColor);
+        holder.dayText.setTextColor(datePanelTextColor);
+        holder.dayOfWeekText.setTextColor(datePanelTextColor);
 
-        holder.dateStub.setContentDescription(EventDates.formatLong(date));
+        holder.datePanel.setContentDescription(EventDates.formatLong(date));
         holder.monthText.setText(EventDates.formatShortMonth(date));
         holder.dayText.setText(EventDates.formatDayOfMonth(date));
         holder.dayOfWeekText.setText(EventDates.formatShortDayOfWeek(date));
@@ -125,13 +121,17 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         holder.typeLabel.setText(type.getLabelRes());
         holder.typeLabel.setBackgroundTintList(
                 ColorStateList.valueOf(context.getColor(type.getContainerColorRes())));
-        holder.countdownText.setText(state.countdown(context, event, row.daysAway));
+        state.showCountdown(holder.countdownText, event, row.daysAway);
         bindTimes(holder, event);
         holder.locationText.setText(event.getLocation());
+        holder.locationText.setContentDescription(
+                context.getString(R.string.description_location, event.getLocation()));
         holder.organizerText.setText(event.getOrganizer());
+        holder.organizerText.setContentDescription(
+                context.getString(R.string.description_organizer, event.getOrganizer()));
     }
 
-    /** Shows the start, end and length like a boarding pass, read out as one sentence. */
+    /** Shows the start, end and length in one row, read out as one sentence. */
     private static void bindTimes(EventViewHolder holder, Event event) {
         Context context = holder.itemView.getContext();
         String start = EventTimes.format(event.getStartTime());
@@ -149,17 +149,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     /** Adds month headings and works out the state of each event at the given time. */
     private static List<Row> buildRows(List<Event> events, LocalDateTime now) {
-        // Events happening now stand out; when none is, the next ones to start do.
-        boolean anyLive = false;
-        LocalDateTime nextStart = null;
-        for (Event event : events) {
-            TicketState state = TicketState.at(event, now);
-            if (state == TicketState.LIVE) {
-                anyLive = true;
-            } else if (state == TicketState.UPCOMING && nextStart == null) {
-                nextStart = event.getStart();
-            }
-        }
+        LocalDateTime nextStart = EventCardState.nextStart(events, now);
         List<Row> rows = new ArrayList<>();
         YearMonth month = null;
         for (Event event : events) {
@@ -168,10 +158,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 month = eventMonth;
                 rows.add(new Row(month, null, null, 0));
             }
-            TicketState state = TicketState.at(event, now);
-            if (state == TicketState.UPCOMING && !anyLive && event.getStart().equals(nextStart)) {
-                state = TicketState.NEXT;
-            }
+            EventCardState state = EventCardState.at(event, now, nextStart);
             rows.add(new Row(month, event, state, state.daysAway(event, now.toLocalDate())));
         }
         return rows;
@@ -184,10 +171,10 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         @Nullable
         private final Event event;
         @Nullable
-        private final TicketState state;
+        private final EventCardState state;
         private final long daysAway;
 
-        Row(YearMonth month, @Nullable Event event, @Nullable TicketState state, long daysAway) {
+        Row(YearMonth month, @Nullable Event event, @Nullable EventCardState state, long daysAway) {
             this.month = month;
             this.event = event;
             this.state = state;
@@ -233,27 +220,27 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
-    /** Called when a ticket is tapped, with the state its colors show. */
+    /** Called when a card is tapped. */
     public interface OnEventClickListener {
-        void onEventClick(Event event, TicketState state);
+        void onEventClick(Event event);
     }
 
     /** The view of one month heading. */
-    public static final class MonthViewHolder extends RecyclerView.ViewHolder {
+    private static final class MonthViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView monthText;
 
-        public MonthViewHolder(@NonNull View itemView) {
+        MonthViewHolder(@NonNull View itemView) {
             super(itemView);
             monthText = itemView.findViewById(R.id.month_heading);
         }
     }
 
-    /** The views of one event ticket. */
-    public static final class EventViewHolder extends RecyclerView.ViewHolder {
+    /** The views of one event card. */
+    private static final class EventViewHolder extends RecyclerView.ViewHolder {
 
-        private final TicketDrawable ticket;
-        private final View dateStub;
+        private final EventCardDrawable card;
+        private final View datePanel;
         private final TextView monthText;
         private final TextView dayText;
         private final TextView dayOfWeekText;
@@ -268,18 +255,18 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         private final TextView locationText;
         private final TextView organizerText;
 
-        public EventViewHolder(@NonNull View itemView) {
+        EventViewHolder(@NonNull View itemView) {
             super(itemView);
-            ticket = new TicketDrawable(itemView.getContext());
+            card = new EventCardDrawable(itemView.getContext());
             int rippleColor = MaterialColors.getColor(
                     itemView, androidx.appcompat.R.attr.colorControlHighlight);
-            // Without a mask, the ripple is clipped to the ticket shape.
+            // Without a mask, the ripple is clipped to the card shape.
             itemView.setBackground(
-                    new RippleDrawable(ColorStateList.valueOf(rippleColor), ticket, null));
+                    new RippleDrawable(ColorStateList.valueOf(rippleColor), card, null));
             // Screen readers say "Double tap to view details".
             ViewCompat.replaceAccessibilityAction(itemView, AccessibilityActionCompat.ACTION_CLICK,
                     itemView.getContext().getString(R.string.description_view_details), null);
-            dateStub = itemView.findViewById(R.id.date_stub);
+            datePanel = itemView.findViewById(R.id.date_panel);
             monthText = itemView.findViewById(R.id.event_month);
             dayText = itemView.findViewById(R.id.event_day);
             dayOfWeekText = itemView.findViewById(R.id.event_day_of_week);

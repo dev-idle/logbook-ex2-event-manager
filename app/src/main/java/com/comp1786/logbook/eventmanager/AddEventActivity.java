@@ -3,6 +3,7 @@ package com.comp1786.logbook.eventmanager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
@@ -28,7 +29,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * The form for adding an event. The new event is returned to MainActivity as a result.
+ * The form for adding an event, which it returns to MainActivity as a result.
  */
 public class AddEventActivity extends AppCompatActivity {
 
@@ -42,7 +43,7 @@ public class AddEventActivity extends AppCompatActivity {
     private static final String STATE_START_TIME = "start_time";
     private static final String STATE_END_TIME = "end_time";
 
-    // Where both time lists open while no start time is selected.
+    // The start list opens here, and the end list an hour later, until a start is chosen.
     private static final LocalTime DEFAULT_START_TIME = LocalTime.of(6, 0);
     private static final Duration DEFAULT_LENGTH = Duration.ofHours(1);
 
@@ -198,10 +199,11 @@ public class AddEventActivity extends AppCompatActivity {
         buildEndMenu(null);
     }
 
-    /** Offers end times after the start, running past midnight, and opens an hour after it. */
+    /** Offers end times after the start, past midnight too, or every time until one is chosen. */
     private void buildEndMenu(@Nullable LocalTime start) {
         LocalTime from = start != null ? start : DEFAULT_START_TIME;
-        endTimeInput.setSimpleItems(labelsOf(EventTimes.slotsAfter(from)));
+        endTimeInput.setSimpleItems(labelsOf(
+                start != null ? EventTimes.slotsAfter(start) : EventTimes.allSlots()));
         endTimeInput.setPreferredItem(EventTimes.format(from.plus(DEFAULT_LENGTH)));
     }
 
@@ -218,8 +220,12 @@ public class AddEventActivity extends AppCompatActivity {
         endTimeInput.setText(EventTimes.format(end), false);
     }
 
-    /** Opens the picker on the date typed so far, or on today if there is none. */
+    /** Opens the picker on the date typed so far, or on today if it is not a valid date. */
     private void showDatePicker() {
+        // A quick second tap would otherwise open a second picker.
+        if (getSupportFragmentManager().findFragmentByTag(DatePickerFragment.REQUEST_KEY) != null) {
+            return;
+        }
         EventValidator.Result<LocalDate> typed = EventValidator.validateDate(textOf(dateInput));
         LocalDate date = typed.isValid() ? typed.getValue() : LocalDate.now();
         DatePickerFragment.newInstance(date)
@@ -236,7 +242,8 @@ public class AddEventActivity extends AppCompatActivity {
     }
 
     private void showDiscardDialog() {
-        discardDialog = new MaterialAlertDialogBuilder(this)
+        discardDialog = new MaterialAlertDialogBuilder(this,
+                R.style.ThemeOverlay_EventManager_DestructiveDialog)
                 .setTitle(R.string.discard_title)
                 .setMessage(R.string.discard_message)
                 .setNegativeButton(R.string.button_keep_editing, null)
@@ -258,10 +265,10 @@ public class AddEventActivity extends AppCompatActivity {
         EventValidator.Result<EventType> type = EventValidator.validateType(selectedType);
 
         nameLayout.setError(name.isValid() ? null : getString(R.string.error_name_required));
-        dateLayout.setError(date.isValid() ? null : dateError(date.getError()));
+        dateLayout.setError(date.isValid() ? null : dateError(date.getReason()));
         startTimeLayout.setError(
                 startTime.isValid() ? null : getString(R.string.error_start_time_required));
-        endTimeLayout.setError(endTime.isValid() ? null : endTimeError(endTime.getError()));
+        endTimeLayout.setError(endTime.isValid() ? null : endTimeError(endTime.getReason()));
         locationLayout.setError(
                 location.isValid() ? null : getString(R.string.error_location_required));
         organizerLayout.setError(
@@ -284,8 +291,8 @@ public class AddEventActivity extends AppCompatActivity {
         finish();
     }
 
-    private String dateError(EventValidator.Error error) {
-        switch (error) {
+    private String dateError(EventValidator.Reason reason) {
+        switch (reason) {
             case WRONG_DATE_FORMAT:
                 return getString(R.string.error_date_format);
             case NOT_A_REAL_DATE:
@@ -300,8 +307,8 @@ public class AddEventActivity extends AppCompatActivity {
         }
     }
 
-    private String endTimeError(EventValidator.Error error) {
-        switch (error) {
+    private String endTimeError(EventValidator.Reason reason) {
+        switch (reason) {
             case END_SAME_AS_START:
                 return getString(R.string.error_end_time_same);
             case EMPTY:
@@ -368,6 +375,11 @@ public class AddEventActivity extends AppCompatActivity {
                 return;
             }
             layout.setError(null);
+            if (layout == dateLayout && TextUtils.equals(nameLayout.getError(),
+                    getString(R.string.error_name_duplicate))) {
+                // A name only clashes with an event on the same date.
+                nameLayout.setError(null);
+            }
             discardCallback.setEnabled(hasInput());
             if (layout == startTimeLayout || layout == endTimeLayout) {
                 showLength();
