@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * The form for adding an event. The new event is returned to MainActivity as a result.
+ * The form for adding an event, which it returns to MainActivity as a result.
  */
 public class AddEventActivity extends AppCompatActivity {
 
@@ -42,7 +42,7 @@ public class AddEventActivity extends AppCompatActivity {
     private static final String STATE_START_TIME = "start_time";
     private static final String STATE_END_TIME = "end_time";
 
-    // Where both time lists open while no start time is selected.
+    // The start list opens here, and the end list an hour later, until a start is chosen.
     private static final LocalTime DEFAULT_START_TIME = LocalTime.of(6, 0);
     private static final Duration DEFAULT_LENGTH = Duration.ofHours(1);
 
@@ -218,7 +218,7 @@ public class AddEventActivity extends AppCompatActivity {
         endTimeInput.setText(EventTimes.format(end), false);
     }
 
-    /** Opens the picker on the date typed so far, or on today if there is none. */
+    /** Opens the picker on the date typed so far, or on today if it is not a valid date. */
     private void showDatePicker() {
         EventValidator.Result<LocalDate> typed = EventValidator.validateDate(textOf(dateInput));
         LocalDate date = typed.isValid() ? typed.getValue() : LocalDate.now();

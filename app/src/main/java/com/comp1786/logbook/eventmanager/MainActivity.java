@@ -24,6 +24,9 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * Lists the events added while the app is open, as tickets under month headings.
+ */
 public class MainActivity extends AppCompatActivity {
 
     private static final String STATE_EVENTS = "events";

@@ -25,8 +25,8 @@ persistence.
 ## Validation
 
 - Name: required, and not already used on the same date, ignoring case.
-- Date: required, DD/MM/YYYY, a real date, and from 01/01/1900 to 31/12/2100,
-  the range of Android's date picker [2].
+- Date: required, day/month/year such as 5/3/2026 or 05/03/2026, a real date,
+  and from 01/01/1900 to 31/12/2100, the range of Android's date picker [2].
 - Start and end time: required. The end must differ from the start.
 - Location, organizer and type: required.
 
@@ -37,16 +37,19 @@ Error messages follow the GOV.UK Design System guidance [3].
 Start and end times were added to the brief's fields at the lecturer's request.
 
 - The start list opens at 06:00. Choosing a start fills in the end an hour
-  later, and changing the start keeps the length.
+  later if no end is chosen yet, and changing the start keeps the length.
 - An end at or before the start is on the next day, so an event can run past
   midnight. The ticket marks that end time with +1.
 
-## Module guide
+## Module brief
 
 The app uses the patterns from the module's Android Studio brief: explicit
 intents that pass a Serializable event, an ActivityResultLauncher for the
 result, a Toast after saving, and a DatePickerDialog in a DialogFragment [4].
 
+- `DatePickerFragment` is adapted from the brief. It takes the date as a
+  fragment argument instead of a constructor parameter, so Android can
+  recreate it, and returns the chosen date as a fragment result.
 - RecyclerView [5] replaces ListView, for the month headings and the landscape
   grid.
 - Material exposed dropdown menus [6] replace Spinners, so the type and time
@@ -83,6 +86,8 @@ from the command line:
 | `DropdownField.java`        | Menu field that opens on the chosen item         |
 | `DatePickerFragment.java`   | Date picker dialog hosted in a DialogFragment    |
 
+Icons such as Add, Place and Person are from Material Symbols and Icons [7].
+
 ## Sources
 
 1. Material Theme Builder.
@@ -97,3 +102,4 @@ from the command line:
 5. Android Developers. Create dynamic lists with RecyclerView.
    https://developer.android.com/develop/ui/views/layout/recyclerview
 6. Material Design 3. Menus. https://m3.material.io/components/menus/overview
+7. Google. Material Symbols and Icons. https://fonts.google.com/icons
