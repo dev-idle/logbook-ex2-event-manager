@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
         bindViews();
         setSupportActionBar(toolbar);
-        adapter = new EventAdapter();
+        adapter = new EventAdapter(this::openEventDetails);
         GridLayoutManager layoutManager = new GridLayoutManager(this,
                 getResources().getInteger(R.integer.event_list_columns));
         // Month headings span every column.
@@ -122,6 +122,13 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, AddEventActivity.class);
         intent.putExtra(AddEventActivity.EXTRA_EVENTS, events.toArray(new Event[0]));
         addEventLauncher.launch(intent);
+    }
+
+    /** Opens an event in full, with its ticket state so the countdown keeps its color. */
+    private void openEventDetails(Event event, TicketState state) {
+        startActivity(new Intent(MainActivity.this, EventDetailsActivity.class)
+                .putExtra(EventDetailsActivity.EXTRA_EVENT, event)
+                .putExtra(EventDetailsActivity.EXTRA_STATE, state));
     }
 
     /** Adds an event in start order, after any events that start at the same time. */
