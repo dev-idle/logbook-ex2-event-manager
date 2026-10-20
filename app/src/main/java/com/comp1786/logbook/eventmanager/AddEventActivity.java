@@ -236,7 +236,8 @@ public class AddEventActivity extends AppCompatActivity {
     }
 
     private void showDiscardDialog() {
-        discardDialog = new MaterialAlertDialogBuilder(this)
+        discardDialog = new MaterialAlertDialogBuilder(this,
+                R.style.ThemeOverlay_EventManager_DestructiveDialog)
                 .setTitle(R.string.discard_title)
                 .setMessage(R.string.discard_message)
                 .setNegativeButton(R.string.button_keep_editing, null)

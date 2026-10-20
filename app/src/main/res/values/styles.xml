@@ -40,6 +40,22 @@
         <item name="colorOnContainer">?attr/colorOnPrimary</item>
     </style>
 
+    <!-- Confirming buttons that lose data, such as Discard, are red. -->
+    <style name="ThemeOverlay.EventManager.DestructiveDialog"
+        parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.EventManager.DestructiveButton</item>
+    </style>
+
+    <style name="Widget.EventManager.DestructiveButton"
+        parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.EventManager.DestructiveButton</item>
+    </style>
+
+    <style name="ThemeOverlay.EventManager.DestructiveButton"
+        parent="ThemeOverlay.Material3.Button.TextButton">
+        <item name="colorOnContainer">?attr/colorError</item>
+    </style>
+
     <!-- The platform date picker takes its accents from attributes Material sets to secondary. -->
     <style name="ThemeOverlay.EventManager.Picker" parent="ThemeOverlay.Material3.Dialog">
         <item name="android:colorAccent">?attr/colorPrimary</item>
