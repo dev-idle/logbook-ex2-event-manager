@@ -19,7 +19,8 @@ persistence.
 - A prompt before a form with input is discarded.
 - Material 3 light and dark themes with colors generated from seed #2E6FD8 [1].
 - Two columns in landscape, and events and form input kept after rotation.
-- Screen reader text for the full date and time range of each event.
+- Screen reader text for the full date and time range of each event, and
+  labels for its location and organizer.
 
 ## Validation
 

@@ -127,7 +127,11 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         holder.countdownText.setText(state.countdown(context, event, row.daysAway));
         bindTimes(holder, event);
         holder.locationText.setText(event.getLocation());
+        holder.locationText.setContentDescription(
+                context.getString(R.string.description_location, event.getLocation()));
         holder.organizerText.setText(event.getOrganizer());
+        holder.organizerText.setContentDescription(
+                context.getString(R.string.description_organizer, event.getOrganizer()));
     }
 
     /** Shows the start, end and length like a boarding pass, read out as one sentence. */
