@@ -39,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
 
     private final ArrayList<Event> events = new ArrayList<>();
     private EventAdapter adapter;
+    // Set while another screen opens, so a quick second tap does not open it twice.
+    private boolean opening;
 
     private final ActivityResultLauncher<Intent> addEventLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -93,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        opening = false;
         // Times move on while the app is away, so states and countdowns are worked out again.
         showEvents();
     }
@@ -122,6 +125,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openAddEvent() {
+        if (opening) {
+            return;
+        }
+        opening = true;
         Intent intent = new Intent(MainActivity.this, AddEventActivity.class);
         intent.putExtra(AddEventActivity.EXTRA_EVENTS, events.toArray(new Event[0]));
         addEventLauncher.launch(intent);
@@ -129,6 +136,10 @@ public class MainActivity extends AppCompatActivity {
 
     /** Opens an event in full, with the other events so its countdown matches the card. */
     private void openEventDetails(Event event) {
+        if (opening) {
+            return;
+        }
+        opening = true;
         startActivity(new Intent(MainActivity.this, EventDetailsActivity.class)
                 .putExtra(EventDetailsActivity.EXTRA_EVENT, event)
                 .putExtra(EventDetailsActivity.EXTRA_EVENTS, events.toArray(new Event[0])));
