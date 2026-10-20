@@ -141,6 +141,12 @@
         <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
     </style>
 
+    <!-- The day of the month, colored like the ticket stub. -->
+    <style name="Widget.EventManager.DetailDay" parent="">
+        <item name="android:textAppearance">?attr/textAppearanceDisplayMedium</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
     <style name="Widget.EventManager.DetailTime" parent="">
         <item name="android:textAppearance">?attr/textAppearanceHeadlineSmall</item>
         <item name="android:textColor">?attr/colorOnSurface</item>

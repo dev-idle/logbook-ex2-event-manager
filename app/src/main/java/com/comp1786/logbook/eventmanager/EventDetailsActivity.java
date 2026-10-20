@@ -16,6 +16,7 @@ import com.google.android.material.color.MaterialColors;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -35,10 +36,13 @@ public class EventDetailsActivity extends AppCompatActivity {
     private TextView typeLabel;
     private TextView countdownText;
     private View timeBlock;
+    private TextView dayText;
+    private TextView dayOfWeekText;
+    private TextView monthText;
     private TextView startTimeText;
-    private TextView startDateText;
     private TextView lengthText;
     private TextView endTimeText;
+    private TextView nextDayText;
     private TextView endDateText;
     private TextView locationText;
     private TextView organizerText;
@@ -79,10 +83,13 @@ public class EventDetailsActivity extends AppCompatActivity {
         typeLabel = findViewById(R.id.type_label);
         countdownText = findViewById(R.id.event_countdown);
         timeBlock = findViewById(R.id.time_block);
+        dayText = findViewById(R.id.event_day);
+        dayOfWeekText = findViewById(R.id.event_day_of_week);
+        monthText = findViewById(R.id.event_month);
         startTimeText = findViewById(R.id.start_time);
-        startDateText = findViewById(R.id.start_date);
         lengthText = findViewById(R.id.event_length);
         endTimeText = findViewById(R.id.end_time);
+        nextDayText = findViewById(R.id.next_day);
         endDateText = findViewById(R.id.end_date);
         locationText = findViewById(R.id.event_location);
         organizerText = findViewById(R.id.event_organizer);
@@ -103,28 +110,32 @@ public class EventDetailsActivity extends AppCompatActivity {
                 MaterialColors.getColor(countdownText, state.getCountdownColorAttr()));
         countdownText.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 state == TicketState.LIVE ? R.drawable.ic_live : 0, 0, 0, 0);
-        showTimes();
+        showTimes(state);
         locationText.setText(event.getLocation());
         organizerText.setText(event.getOrganizer());
     }
 
-    /** Shows when the event starts and ends, with the end date in color if it is the next day. */
-    private void showTimes() {
+    /** Shows the date and a timeline from start to end, with the end date if it is the next day. */
+    private void showTimes(TicketState state) {
         LocalDate startDate = event.getDate();
         LocalDate endDate = event.getEnd().toLocalDate();
         String start = EventTimes.format(event.getStartTime());
         String end = EventTimes.format(event.getEndTime());
         String length = EventTimes.formatLength(
                 getResources(), event.getStartTime(), event.getEndTime());
+        dayText.setText(EventDates.formatDayOfMonth(startDate));
+        // Blue like a colored ticket stub, or gray like a past one.
+        dayText.setTextColor(MaterialColors.getColor(dayText, state == TicketState.PAST
+                ? com.google.android.material.R.attr.colorOnSurfaceVariant
+                : androidx.appcompat.R.attr.colorPrimary));
+        dayOfWeekText.setText(EventDates.formatDayOfWeek(startDate));
+        monthText.setText(EventDates.formatMonth(YearMonth.from(startDate)));
         startTimeText.setText(start);
-        startDateText.setText(EventDates.formatMedium(startDate));
         lengthText.setText(length);
         endTimeText.setText(end);
-        endDateText.setText(EventDates.formatMedium(endDate));
-        // The same color as the +1 on the ticket.
-        endDateText.setTextColor(MaterialColors.getColor(endDateText, event.endsNextDay()
-                ? androidx.appcompat.R.attr.colorPrimary
-                : com.google.android.material.R.attr.colorOnSurfaceVariant));
+        nextDayText.setVisibility(event.endsNextDay() ? View.VISIBLE : View.GONE);
+        endDateText.setVisibility(event.endsNextDay() ? View.VISIBLE : View.GONE);
+        endDateText.setText(EventDates.formatLong(endDate));
         timeBlock.setContentDescription(getString(R.string.description_starts_ends,
                 start, EventDates.formatLong(startDate), end, EventDates.formatLong(endDate),
                 length));

@@ -8,9 +8,9 @@ persistence.
 ## Features
 
 - Events listed in start order under month headings, each with all its details.
-- Tap a ticket to see the event in full, including any long name, location or
-  organizer the ticket cuts short. The end date shows in color when the event
-  ends on the next day.
+- Tap a ticket to see the event in full: its date, a timeline from start to
+  end, and any long name, location or organizer the ticket cuts short. An event
+  that ends on the next day shows +1 and its end date.
 - Add event form with a date picker, start and end time lists in 15-minute
   steps, and the five event types from the brief.
 - Validation that shows every error at once and moves focus to the first one.
@@ -71,7 +71,7 @@ from the command line:
 | --------------------------- | ------------------------------------------------ |
 | `MainActivity.java`         | Event list, empty state and the Add event button |
 | `AddEventActivity.java`     | Add event form, time lists and error messages    |
-| `EventDetailsActivity.java` | One event in full, with its start and end        |
+| `EventDetailsActivity.java` | One event in full, with its date and timeline    |
 | `EventAdapter.java`         | Month headings and tickets                       |
 | `TicketState.java`          | Ticket states, colors and countdowns             |
 | `TicketDrawable.java`       | Ticket shape with the date stub and perforation  |
