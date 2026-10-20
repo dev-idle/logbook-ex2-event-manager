@@ -124,11 +124,11 @@ public class MainActivity extends AppCompatActivity {
         addEventLauncher.launch(intent);
     }
 
-    /** Opens an event in full, with its ticket state so the countdown keeps its color. */
-    private void openEventDetails(Event event, TicketState state) {
+    /** Opens an event in full, with the other events so its countdown matches the ticket. */
+    private void openEventDetails(Event event) {
         startActivity(new Intent(MainActivity.this, EventDetailsActivity.class)
                 .putExtra(EventDetailsActivity.EXTRA_EVENT, event)
-                .putExtra(EventDetailsActivity.EXTRA_STATE, state));
+                .putExtra(EventDetailsActivity.EXTRA_EVENTS, events.toArray(new Event[0])));
     }
 
     /** Adds an event in start order, after any events that start at the same time. */

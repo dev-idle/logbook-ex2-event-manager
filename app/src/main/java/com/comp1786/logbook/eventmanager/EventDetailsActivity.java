@@ -15,6 +15,9 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.color.MaterialColors;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -24,8 +27,8 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     /** Extra with the event to show. */
     public static final String EXTRA_EVENT = "event";
-    /** Extra with the state of the event's ticket, so the countdown has the same color. */
-    public static final String EXTRA_STATE = "state";
+    /** Extra with every listed event, which decides whether this one is the next. */
+    public static final String EXTRA_EVENTS = "events";
 
     private MaterialToolbar toolbar;
     private TextView nameText;
@@ -39,6 +42,9 @@ public class EventDetailsActivity extends AppCompatActivity {
     private TextView endDateText;
     private TextView locationText;
     private TextView organizerText;
+
+    private Event event;
+    private List<Event> events;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +61,16 @@ public class EventDetailsActivity extends AppCompatActivity {
         bindViews();
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
-        Event event = getIntent().getSerializableExtra(EXTRA_EVENT, Event.class);
-        TicketState state = getIntent().getSerializableExtra(EXTRA_STATE, TicketState.class);
-        showEvent(Objects.requireNonNull(event), Objects.requireNonNull(state));
+        event = Objects.requireNonNull(getIntent().getSerializableExtra(EXTRA_EVENT, Event.class));
+        events = Arrays.asList(Objects.requireNonNull(
+                getIntent().getSerializableExtra(EXTRA_EVENTS, Event[].class)));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Times move on while the app is away, so the countdown is worked out again.
+        showEvent();
     }
 
     private void bindViews() {
@@ -75,25 +88,28 @@ public class EventDetailsActivity extends AppCompatActivity {
         organizerText = findViewById(R.id.event_organizer);
     }
 
-    private void showEvent(Event event, TicketState state) {
+    /** Shows the event with the same countdown and colors as its ticket. */
+    private void showEvent() {
+        LocalDateTime now = LocalDateTime.now();
+        TicketState state = TicketState.at(event, now, TicketState.nextStart(events, now));
         EventType type = event.getType();
         nameText.setText(event.getName());
         typeLabel.setText(type.getLabelRes());
         typeLabel.setBackgroundTintList(
                 ColorStateList.valueOf(getColor(type.getContainerColorRes())));
         countdownText.setText(
-                state.countdown(this, event, state.daysAway(event, LocalDate.now())));
+                state.countdown(this, event, state.daysAway(event, now.toLocalDate())));
         countdownText.setTextColor(
                 MaterialColors.getColor(countdownText, state.getCountdownColorAttr()));
         countdownText.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 state == TicketState.LIVE ? R.drawable.ic_live : 0, 0, 0, 0);
-        showTimes(event);
+        showTimes();
         locationText.setText(event.getLocation());
         organizerText.setText(event.getOrganizer());
     }
 
     /** Shows when the event starts and ends, with the end date in color if it is the next day. */
-    private void showTimes(Event event) {
+    private void showTimes() {
         LocalDate startDate = event.getDate();
         LocalDate endDate = event.getEnd().toLocalDate();
         String start = EventTimes.format(event.getStartTime());

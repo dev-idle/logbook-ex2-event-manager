@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.AttrRes;
+import androidx.annotation.Nullable;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 /**
  * Where an event is in time, with the colors and countdown that show it.
@@ -57,12 +59,31 @@ public enum TicketState {
         return countdownColorAttr;
     }
 
-    /** Returns the state at the given time. EventAdapter marks the next events itself. */
-    public static TicketState at(Event event, LocalDateTime now) {
+    /** Returns when the next events start, or null while one is happening or none is ahead. */
+    @Nullable
+    public static LocalDateTime nextStart(List<Event> events, LocalDateTime now) {
+        LocalDateTime nextStart = null;
+        for (Event event : events) {
+            TicketState state = at(event, now, null);
+            if (state == LIVE) {
+                return null;
+            } else if (state == UPCOMING
+                    && (nextStart == null || event.getStart().isBefore(nextStart))) {
+                nextStart = event.getStart();
+            }
+        }
+        return nextStart;
+    }
+
+    /** Returns the state of an event at the given time, given when the next events start. */
+    public static TicketState at(Event event, LocalDateTime now,
+            @Nullable LocalDateTime nextStart) {
         if (!event.getEnd().isAfter(now)) {
             return PAST;
+        } else if (!event.getStart().isAfter(now)) {
+            return LIVE;
         }
-        return event.getStart().isAfter(now) ? UPCOMING : LIVE;
+        return event.getStart().equals(nextStart) ? NEXT : UPCOMING;
     }
 
     /** Returns the days from today to the day the countdown counts to, negative once past. */

@@ -77,8 +77,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         holder.itemView.setOnClickListener(v -> {
             int position = holder.getBindingAdapterPosition();
             if (position != RecyclerView.NO_POSITION) {
-                Row row = rows.get(position);
-                listener.onEventClick(row.event, row.state);
+                listener.onEventClick(rows.get(position).event);
             }
         });
         return holder;
@@ -149,17 +148,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     /** Adds month headings and works out the state of each event at the given time. */
     private static List<Row> buildRows(List<Event> events, LocalDateTime now) {
-        // Events happening now stand out; when none is, the next ones to start do.
-        boolean anyLive = false;
-        LocalDateTime nextStart = null;
-        for (Event event : events) {
-            TicketState state = TicketState.at(event, now);
-            if (state == TicketState.LIVE) {
-                anyLive = true;
-            } else if (state == TicketState.UPCOMING && nextStart == null) {
-                nextStart = event.getStart();
-            }
-        }
+        LocalDateTime nextStart = TicketState.nextStart(events, now);
         List<Row> rows = new ArrayList<>();
         YearMonth month = null;
         for (Event event : events) {
@@ -168,10 +157,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 month = eventMonth;
                 rows.add(new Row(month, null, null, 0));
             }
-            TicketState state = TicketState.at(event, now);
-            if (state == TicketState.UPCOMING && !anyLive && event.getStart().equals(nextStart)) {
-                state = TicketState.NEXT;
-            }
+            TicketState state = TicketState.at(event, now, nextStart);
             rows.add(new Row(month, event, state, state.daysAway(event, now.toLocalDate())));
         }
         return rows;
@@ -233,9 +219,9 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
-    /** Called when a ticket is tapped, with the state its colors show. */
+    /** Called when a ticket is tapped. */
     public interface OnEventClickListener {
-        void onEventClick(Event event, TicketState state);
+        void onEventClick(Event event);
     }
 
     /** The view of one month heading. */
