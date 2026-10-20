@@ -95,31 +95,31 @@
         <item name="android:textColor">?attr/colorPrimary</item>
     </style>
 
-    <style name="Widget.EventManager.TicketStub" parent="">
+    <style name="Widget.EventManager.DatePanel" parent="">
         <item name="android:textColor">?attr/colorOnPrimaryContainer</item>
     </style>
 
-    <style name="Widget.EventManager.TicketStub.Month">
+    <style name="Widget.EventManager.DatePanel.Month">
         <item name="android:letterSpacing">0.1</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textAppearance">?attr/textAppearanceLabelMedium</item>
     </style>
 
-    <style name="Widget.EventManager.TicketStub.Day">
+    <style name="Widget.EventManager.DatePanel.Day">
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textAppearance">?attr/textAppearanceHeadlineSmall</item>
     </style>
 
-    <style name="Widget.EventManager.TicketStub.DayOfWeek">
+    <style name="Widget.EventManager.DatePanel.DayOfWeek">
         <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
     </style>
 
-    <style name="Widget.EventManager.TicketTime" parent="">
+    <style name="Widget.EventManager.CardTime" parent="">
         <item name="android:textAppearance">?attr/textAppearanceTitleSmall</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
-    <style name="Widget.EventManager.TicketTimeLine" parent="">
+    <style name="Widget.EventManager.CardTimeLine" parent="">
         <item name="android:background">?attr/colorOutlineVariant</item>
         <item name="android:layout_marginStart">@dimen/space_small</item>
         <item name="android:layout_marginEnd">@dimen/space_small</item>
@@ -141,7 +141,7 @@
         <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
     </style>
 
-    <!-- The day of the month, colored like the ticket stub. -->
+    <!-- The day of the month, colored like the date panel of the card. -->
     <style name="Widget.EventManager.DetailDay" parent="">
         <item name="android:textAppearance">?attr/textAppearanceDisplayMedium</item>
         <item name="android:textColor">?attr/colorPrimary</item>

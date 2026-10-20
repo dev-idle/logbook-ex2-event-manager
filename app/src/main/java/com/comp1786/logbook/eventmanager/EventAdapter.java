@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Shows the events as tickets with all their details, under a heading for each month.
+ * Shows the events as cards with all their details, under a heading for each month.
  */
 public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -103,20 +103,21 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         Event event = row.event;
         LocalDate date = event.getDate();
         EventType type = event.getType();
-        TicketState state = row.state;
+        EventCardState state = row.state;
 
-        holder.ticket.setStubColor(
-                MaterialColors.getColor(holder.itemView, state.getStubColorAttr()));
-        int stubTextColor = MaterialColors.getColor(holder.itemView, state.getStubTextColorAttr());
-        holder.monthText.setTextColor(stubTextColor);
-        holder.dayText.setTextColor(stubTextColor);
-        holder.dayOfWeekText.setTextColor(stubTextColor);
+        holder.card.setDatePanelColor(
+                MaterialColors.getColor(holder.itemView, state.getDatePanelColorAttr()));
+        int datePanelTextColor =
+                MaterialColors.getColor(holder.itemView, state.getDatePanelTextColorAttr());
+        holder.monthText.setTextColor(datePanelTextColor);
+        holder.dayText.setTextColor(datePanelTextColor);
+        holder.dayOfWeekText.setTextColor(datePanelTextColor);
         holder.countdownText.setTextColor(
                 MaterialColors.getColor(holder.itemView, state.getCountdownColorAttr()));
         holder.countdownText.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                state == TicketState.LIVE ? R.drawable.ic_live : 0, 0, 0, 0);
+                state == EventCardState.LIVE ? R.drawable.ic_live : 0, 0, 0, 0);
 
-        holder.dateStub.setContentDescription(EventDates.formatLong(date));
+        holder.datePanel.setContentDescription(EventDates.formatLong(date));
         holder.monthText.setText(EventDates.formatShortMonth(date));
         holder.dayText.setText(EventDates.formatDayOfMonth(date));
         holder.dayOfWeekText.setText(EventDates.formatShortDayOfWeek(date));
@@ -152,7 +153,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     /** Adds month headings and works out the state of each event at the given time. */
     private static List<Row> buildRows(List<Event> events, LocalDateTime now) {
-        LocalDateTime nextStart = TicketState.nextStart(events, now);
+        LocalDateTime nextStart = EventCardState.nextStart(events, now);
         List<Row> rows = new ArrayList<>();
         YearMonth month = null;
         for (Event event : events) {
@@ -161,7 +162,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 month = eventMonth;
                 rows.add(new Row(month, null, null, 0));
             }
-            TicketState state = TicketState.at(event, now, nextStart);
+            EventCardState state = EventCardState.at(event, now, nextStart);
             rows.add(new Row(month, event, state, state.daysAway(event, now.toLocalDate())));
         }
         return rows;
@@ -174,10 +175,10 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         @Nullable
         private final Event event;
         @Nullable
-        private final TicketState state;
+        private final EventCardState state;
         private final long daysAway;
 
-        Row(YearMonth month, @Nullable Event event, @Nullable TicketState state, long daysAway) {
+        Row(YearMonth month, @Nullable Event event, @Nullable EventCardState state, long daysAway) {
             this.month = month;
             this.event = event;
             this.state = state;
@@ -223,7 +224,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
-    /** Called when a ticket is tapped. */
+    /** Called when a card is tapped. */
     public interface OnEventClickListener {
         void onEventClick(Event event);
     }
@@ -239,11 +240,11 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
-    /** The views of one event ticket. */
+    /** The views of one event card. */
     public static final class EventViewHolder extends RecyclerView.ViewHolder {
 
-        private final TicketDrawable ticket;
-        private final View dateStub;
+        private final EventCardDrawable card;
+        private final View datePanel;
         private final TextView monthText;
         private final TextView dayText;
         private final TextView dayOfWeekText;
@@ -260,16 +261,16 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         public EventViewHolder(@NonNull View itemView) {
             super(itemView);
-            ticket = new TicketDrawable(itemView.getContext());
+            card = new EventCardDrawable(itemView.getContext());
             int rippleColor = MaterialColors.getColor(
                     itemView, androidx.appcompat.R.attr.colorControlHighlight);
-            // Without a mask, the ripple is clipped to the ticket shape.
+            // Without a mask, the ripple is clipped to the card shape.
             itemView.setBackground(
-                    new RippleDrawable(ColorStateList.valueOf(rippleColor), ticket, null));
+                    new RippleDrawable(ColorStateList.valueOf(rippleColor), card, null));
             // Screen readers say "Double tap to view details".
             ViewCompat.replaceAccessibilityAction(itemView, AccessibilityActionCompat.ACTION_CLICK,
                     itemView.getContext().getString(R.string.description_view_details), null);
-            dateStub = itemView.findViewById(R.id.date_stub);
+            datePanel = itemView.findViewById(R.id.date_panel);
             monthText = itemView.findViewById(R.id.event_month);
             dayText = itemView.findViewById(R.id.event_day);
             dayOfWeekText = itemView.findViewById(R.id.event_day_of_week);

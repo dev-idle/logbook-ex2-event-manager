@@ -8,13 +8,13 @@ persistence.
 ## Features
 
 - Events listed in start order under month headings, each with all its details.
-- Tap a ticket to see the event in full: its date, a timeline from start to
-  end, and any long name, location or organizer the ticket cuts short. An event
+- Tap an event card to see the event in full: its date, a timeline from start to
+  end, and any long name, location or organizer the card cuts short. An event
   that ends on the next day shows +1 and its end date.
 - Add event form with a date picker, start and end time lists in 15-minute
   steps, and the five event types from the brief.
 - Validation that shows every error at once and moves focus to the first one.
-- Ticket colors and a countdown, such as "Happening now" or "In 5 days", for
+- Card colors and a countdown, such as "Happening now" or "In 5 days", for
   live, next, upcoming and past events.
 - A prompt before a form with input is discarded.
 - Material 3 light and dark themes with colors generated from seed #2E6FD8 [1].
@@ -39,7 +39,7 @@ Start and end times were added to the brief's fields at the lecturer's request.
 - The start list opens at 06:00. Choosing a start fills in the end an hour
   later if no end is chosen yet, and changing the start keeps the length.
 - An end at or before the start is on the next day, so an event can run past
-  midnight. The ticket marks that end time with +1.
+  midnight. The card marks that end time with +1.
 
 ## Module brief
 
@@ -75,9 +75,9 @@ from the command line:
 | `MainActivity.java`         | Event list, empty state and the Add event button |
 | `AddEventActivity.java`     | Add event form, time lists and error messages    |
 | `EventDetailsActivity.java` | One event in full, with its date and timeline    |
-| `EventAdapter.java`         | Month headings and tickets                       |
-| `TicketState.java`          | Ticket states, colors and countdowns             |
-| `TicketDrawable.java`       | Ticket shape with the date stub and perforation  |
+| `EventAdapter.java`         | Month headings and cards                         |
+| `EventCardState.java`       | Card states, colors and countdowns               |
+| `EventCardDrawable.java`    | Card shape with the date panel and divider       |
 | `Event.java`                | Event model                                      |
 | `EventType.java`            | Event types and their label colors               |
 | `EventValidator.java`       | Input validation and the duplicate check         |

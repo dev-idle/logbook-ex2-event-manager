@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Lists the events added while the app is open, as tickets under month headings.
+ * Lists the events added while the app is open, as cards under month headings.
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         addEventLauncher.launch(intent);
     }
 
-    /** Opens an event in full, with the other events so its countdown matches the ticket. */
+    /** Opens an event in full, with the other events so its countdown matches the card. */
     private void openEventDetails(Event event) {
         startActivity(new Intent(MainActivity.this, EventDetailsActivity.class)
                 .putExtra(EventDetailsActivity.EXTRA_EVENT, event)

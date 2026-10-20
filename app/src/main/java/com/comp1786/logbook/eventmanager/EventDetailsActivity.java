@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Shows one event in full, including the text a ticket cuts short.
+ * Shows one event in full, including the text a card cuts short.
  */
 public class EventDetailsActivity extends AppCompatActivity {
 
@@ -95,10 +95,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         organizerText = findViewById(R.id.event_organizer);
     }
 
-    /** Shows the event with the same countdown and colors as its ticket. */
+    /** Shows the event with the same countdown and colors as its card. */
     private void showEvent() {
         LocalDateTime now = LocalDateTime.now();
-        TicketState state = TicketState.at(event, now, TicketState.nextStart(events, now));
+        EventCardState state = EventCardState.at(event, now, EventCardState.nextStart(events, now));
         EventType type = event.getType();
         nameText.setText(event.getName());
         typeLabel.setText(type.getLabelRes());
@@ -109,14 +109,14 @@ public class EventDetailsActivity extends AppCompatActivity {
         countdownText.setTextColor(
                 MaterialColors.getColor(countdownText, state.getCountdownColorAttr()));
         countdownText.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                state == TicketState.LIVE ? R.drawable.ic_live : 0, 0, 0, 0);
+                state == EventCardState.LIVE ? R.drawable.ic_live : 0, 0, 0, 0);
         showTimes(state);
         locationText.setText(event.getLocation());
         organizerText.setText(event.getOrganizer());
     }
 
     /** Shows the date and a timeline from start to end, with the end date if it is the next day. */
-    private void showTimes(TicketState state) {
+    private void showTimes(EventCardState state) {
         LocalDate startDate = event.getDate();
         LocalDate endDate = event.getEnd().toLocalDate();
         String start = EventTimes.format(event.getStartTime());
@@ -124,8 +124,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         String length = EventTimes.formatLength(
                 getResources(), event.getStartTime(), event.getEndTime());
         dayText.setText(EventDates.formatDayOfMonth(startDate));
-        // Blue like a colored ticket stub, or gray like a past one.
-        dayText.setTextColor(MaterialColors.getColor(dayText, state == TicketState.PAST
+        // Blue like a colored date panel, or gray like a past one.
+        dayText.setTextColor(MaterialColors.getColor(dayText, state == EventCardState.PAST
                 ? com.google.android.material.R.attr.colorOnSurfaceVariant
                 : androidx.appcompat.R.attr.colorPrimary));
         dayOfWeekText.setText(EventDates.formatDayOfWeek(startDate));
