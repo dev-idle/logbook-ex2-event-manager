@@ -112,10 +112,6 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         holder.monthText.setTextColor(datePanelTextColor);
         holder.dayText.setTextColor(datePanelTextColor);
         holder.dayOfWeekText.setTextColor(datePanelTextColor);
-        holder.countdownText.setTextColor(
-                MaterialColors.getColor(holder.itemView, state.getCountdownColorAttr()));
-        holder.countdownText.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                state == EventCardState.LIVE ? R.drawable.ic_live : 0, 0, 0, 0);
 
         holder.datePanel.setContentDescription(EventDates.formatLong(date));
         holder.monthText.setText(EventDates.formatShortMonth(date));
@@ -125,7 +121,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         holder.typeLabel.setText(type.getLabelRes());
         holder.typeLabel.setBackgroundTintList(
                 ColorStateList.valueOf(context.getColor(type.getContainerColorRes())));
-        holder.countdownText.setText(state.countdown(context, event, row.daysAway));
+        state.showCountdown(holder.countdownText, event, row.daysAway);
         bindTimes(holder, event);
         holder.locationText.setText(event.getLocation());
         holder.locationText.setContentDescription(
@@ -230,18 +226,18 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     /** The view of one month heading. */
-    public static final class MonthViewHolder extends RecyclerView.ViewHolder {
+    private static final class MonthViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView monthText;
 
-        public MonthViewHolder(@NonNull View itemView) {
+        MonthViewHolder(@NonNull View itemView) {
             super(itemView);
             monthText = itemView.findViewById(R.id.month_heading);
         }
     }
 
     /** The views of one event card. */
-    public static final class EventViewHolder extends RecyclerView.ViewHolder {
+    private static final class EventViewHolder extends RecyclerView.ViewHolder {
 
         private final EventCardDrawable card;
         private final View datePanel;
@@ -259,7 +255,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         private final TextView locationText;
         private final TextView organizerText;
 
-        public EventViewHolder(@NonNull View itemView) {
+        EventViewHolder(@NonNull View itemView) {
             super(itemView);
             card = new EventCardDrawable(itemView.getContext());
             int rippleColor = MaterialColors.getColor(

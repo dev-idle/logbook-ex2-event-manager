@@ -183,7 +183,7 @@
     <!-- Two lines fit a full address. -->
     <TextView
         android:id="@+id/event_location"
-        style="@style/Widget.EventManager.EventDetail"
+        style="@style/Widget.EventManager.CardDetail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/space_small"
@@ -196,7 +196,7 @@
 
     <TextView
         android:id="@+id/event_organizer"
-        style="@style/Widget.EventManager.EventDetail"
+        style="@style/Widget.EventManager.CardDetail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/space_extra_small"

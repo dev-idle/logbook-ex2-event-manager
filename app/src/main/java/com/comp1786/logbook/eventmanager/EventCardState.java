@@ -2,9 +2,12 @@ package com.comp1786.logbook.eventmanager;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.widget.TextView;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.Nullable;
+
+import com.google.android.material.color.MaterialColors;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -54,11 +57,6 @@ public enum EventCardState {
         return datePanelTextColorAttr;
     }
 
-    @AttrRes
-    public int getCountdownColorAttr() {
-        return countdownColorAttr;
-    }
-
     /** Returns when the next events start, or null while one is happening or none is ahead. */
     @Nullable
     public static LocalDateTime nextStart(List<Event> events, LocalDateTime now) {
@@ -91,8 +89,16 @@ public enum EventCardState {
         return ChronoUnit.DAYS.between(today, countdownDate(event));
     }
 
+    /** Shows the countdown in its color, with a dot while the event is happening. */
+    public void showCountdown(TextView countdownView, Event event, long daysAway) {
+        countdownView.setText(countdown(countdownView.getContext(), event, daysAway));
+        countdownView.setTextColor(MaterialColors.getColor(countdownView, countdownColorAttr));
+        countdownView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                this == LIVE ? R.drawable.ic_live : 0, 0, 0, 0);
+    }
+
     /** Describes when the event is, such as "Happening now", "In 6 days" or "2 months ago". */
-    public String countdown(Context context, Event event, long daysAway) {
+    private String countdown(Context context, Event event, long daysAway) {
         if (this == LIVE) {
             return context.getString(R.string.countdown_live);
         }

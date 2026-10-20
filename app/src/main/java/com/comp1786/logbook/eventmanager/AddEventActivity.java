@@ -265,10 +265,10 @@ public class AddEventActivity extends AppCompatActivity {
         EventValidator.Result<EventType> type = EventValidator.validateType(selectedType);
 
         nameLayout.setError(name.isValid() ? null : getString(R.string.error_name_required));
-        dateLayout.setError(date.isValid() ? null : dateError(date.getError()));
+        dateLayout.setError(date.isValid() ? null : dateError(date.getReason()));
         startTimeLayout.setError(
                 startTime.isValid() ? null : getString(R.string.error_start_time_required));
-        endTimeLayout.setError(endTime.isValid() ? null : endTimeError(endTime.getError()));
+        endTimeLayout.setError(endTime.isValid() ? null : endTimeError(endTime.getReason()));
         locationLayout.setError(
                 location.isValid() ? null : getString(R.string.error_location_required));
         organizerLayout.setError(
@@ -291,8 +291,8 @@ public class AddEventActivity extends AppCompatActivity {
         finish();
     }
 
-    private String dateError(EventValidator.Error error) {
-        switch (error) {
+    private String dateError(EventValidator.Reason reason) {
+        switch (reason) {
             case WRONG_DATE_FORMAT:
                 return getString(R.string.error_date_format);
             case NOT_A_REAL_DATE:
@@ -307,8 +307,8 @@ public class AddEventActivity extends AppCompatActivity {
         }
     }
 
-    private String endTimeError(EventValidator.Error error) {
-        switch (error) {
+    private String endTimeError(EventValidator.Reason reason) {
+        switch (reason) {
             case END_SAME_AS_START:
                 return getString(R.string.error_end_time_same);
             case EMPTY:

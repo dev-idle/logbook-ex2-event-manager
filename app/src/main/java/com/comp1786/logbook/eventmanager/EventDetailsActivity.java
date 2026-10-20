@@ -104,12 +104,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         typeLabel.setText(type.getLabelRes());
         typeLabel.setBackgroundTintList(
                 ColorStateList.valueOf(getColor(type.getContainerColorRes())));
-        countdownText.setText(
-                state.countdown(this, event, state.daysAway(event, now.toLocalDate())));
-        countdownText.setTextColor(
-                MaterialColors.getColor(countdownText, state.getCountdownColorAttr()));
-        countdownText.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                state == EventCardState.LIVE ? R.drawable.ic_live : 0, 0, 0, 0);
+        state.showCountdown(countdownText, event, state.daysAway(event, now.toLocalDate()));
         showTimes(state);
         locationText.setText(event.getLocation());
         organizerText.setText(event.getOrganizer());
