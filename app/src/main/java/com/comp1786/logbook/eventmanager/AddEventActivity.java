@@ -3,6 +3,7 @@ package com.comp1786.logbook.eventmanager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
@@ -373,6 +374,11 @@ public class AddEventActivity extends AppCompatActivity {
                 return;
             }
             layout.setError(null);
+            if (layout == dateLayout && TextUtils.equals(nameLayout.getError(),
+                    getString(R.string.error_name_duplicate))) {
+                // A name only clashes with an event on the same date.
+                nameLayout.setError(null);
+            }
             discardCallback.setEnabled(hasInput());
             if (layout == startTimeLayout || layout == endTimeLayout) {
                 showLength();
