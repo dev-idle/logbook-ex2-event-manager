@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         opening = false;
-        // Times move on while the app is away, so states and countdowns are worked out again.
+        // States and countdowns depend on the current time, so they are worked out on each start.
         showEvents();
     }
 

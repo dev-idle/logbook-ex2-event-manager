@@ -73,7 +73,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // Times move on while the app is away, so the countdown is worked out again.
+        // The countdown depends on the current time, so it is worked out on each start.
         showEvent();
     }
 

@@ -131,7 +131,7 @@ public class EventAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 context.getString(R.string.description_organizer, event.getOrganizer()));
     }
 
-    /** Shows the start, end and length like a boarding pass, read out as one sentence. */
+    /** Shows the start, end and length in one row, read out as one sentence. */
     private static void bindTimes(EventViewHolder holder, Event event) {
         Context context = holder.itemView.getContext();
         String start = EventTimes.format(event.getStartTime());
