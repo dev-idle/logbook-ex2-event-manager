@@ -40,8 +40,8 @@
         <item name="android:datePickerDialogTheme">@style/ThemeOverlay.EventManager.Picker</item>
     </style>
 
-    <!-- The list screen draws its background once, through the window. -->
-    <style name="Theme.EventManager.List">
+    <!-- The list and details screens draw the header tone once, through the window. -->
+    <style name="Theme.EventManager.Cards">
         <item name="android:windowBackground">@color/list_background</item>
     </style>
 </resources>

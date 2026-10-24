@@ -8,9 +8,9 @@ persistence.
 ## Features
 
 - Events listed in start order under month headings, each with all its details.
-- Tap an event card to see the event in full: its date, a timeline from start to
-  end, and any long name, location or organizer the card cuts short. An event
-  that ends on the next day shows +1 and its end date.
+- Tap an event card to see the event in full on one card: its full date, its
+  times and length, and any long name, location or organizer the event card
+  cuts short. An event that ends on the next day shows +1.
 - Add event form with a date picker, start and end time lists in 15-minute
   steps, and the five event types from the brief.
 - Validation that shows every error at once and moves focus to the first one.
@@ -74,7 +74,7 @@ from the command line:
 | --------------------------- | ------------------------------------------------ |
 | `MainActivity.java`         | Event list, empty state and the Add event button |
 | `AddEventActivity.java`     | Add event form, time lists and error messages    |
-| `EventDetailsActivity.java` | One event in full, with its date and timeline    |
+| `EventDetailsActivity.java` | One event in full, with its date and times       |
 | `EventAdapter.java`         | Month headings and cards                         |
 | `EventCardState.java`       | Card states, colors and countdowns               |
 | `EventCardDrawable.java`    | Card shape with the date panel and divider       |
